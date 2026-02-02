@@ -1,26 +1,118 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer base {
+  .font-inter {
+    font-family: var(--font-inter), sans-serif;
+  }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  .font-playfair {
+    font-family: var(--font-playfair), serif;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  .font-space {
+    font-family: var(--font-space), sans-serif;
+  }
+
+  .font-outfit {
+    font-family: var(--font-outfit), sans-serif;
+  }
+
+  .font-bebas {
+    font-family: var(--font-bebas), sans-serif;
   }
 }
 
+@theme {
+  --font-sans: var(--font-google-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: #FDF8FF;
+  --color-foreground: #171717;
+  --color-primary: #3A2D9C;
+  --color-brand-indigo: #3A2D9C;
+  --color-brand-blue: #0ea5e9;
+
+  --radius-2xl: 1rem;
+}
+
+@utility pill-container {
+  @apply bg-white p-4 rounded-xl border border-gray-200 flex flex-col gap-1 transition-all focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5 focus-within:shadow-sm;
+}
+
+@utility pill-input {
+  @apply w-full bg-transparent border-none outline-none focus:ring-0 p-0 text-gray-900 placeholder:text-gray-300;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --background: #FDF8FF;
+  --foreground: #171717;
+}
+
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Glass panel for editor components */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom Scrollbar - Silent & Branded */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(58, 45, 156, 0.1);
+  /* Very subtle brand color */
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(58, 45, 156, 0.4);
+  /* More visible on hover */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+/* Fix mobile auto-zoom on inputs */
+@media screen and (max-width: 768px) {
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
