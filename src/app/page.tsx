@@ -211,15 +211,26 @@ export default function LandingPage() {
           {/* Multi-Mockup Hero Area */}
           <div className="mt-12 md:mt-24 relative max-w-[1400px] mx-auto min-h-[300px] md:min-h-[600px] flex items-center justify-center pt-10 md:pt-20">
             {/* Background Orbits */}
-            <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-20">
-              <div className="w-[600px] md:w-[1200px] h-[600px] md:h-[1200px] rounded-full border border-primary/20" />
-              <div className="absolute w-[450px] md:w-[900px] h-[450px] md:h-[900px] rounded-full border border-primary/10" />
+            <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-visible">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                className="absolute flex items-center justify-center opacity-40 shadow-[0_0_100px_rgba(206,17,38,0.05)]"
+              >
+                <div className="w-[800px] md:w-[1500px] h-[800px] md:h-[1500px] rounded-full border border-primary/20" />
+                <div className="absolute w-[600px] md:w-[1200px] h-[600px] md:h-[1200px] rounded-full border border-primary/15" />
+                <div className="absolute w-[400px] md:w-[900px] h-[400px] md:h-[900px] rounded-full border border-primary/10" />
+
+                {/* Decorative Dots on orbit */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-primary rounded-full shadow-[0_0_15px_rgba(206,17,38,0.5)]" />
+                <div className="absolute bottom-1/4 right-0 w-2 h-2 bg-blue-400 rounded-full shadow-[0_0_10px_rgba(96,165,250,0.5)]" />
+              </motion.div>
             </div>
 
             {/* Desktop-only Absolute Smart Cards */}
             <div className="hidden md:contents">
               <SmartCard
-                className="top-[-5%] left-[0%]"
+                className="top-[-10%] left-[-5%]"
                 delay={0.6}
                 icon={Zap}
                 title="Automatically"
@@ -235,7 +246,7 @@ export default function LandingPage() {
               </SmartCard>
 
               <SmartCard
-                className="top-[-5%] right-[0%] hidden lg:block"
+                className="top-[-10%] right-[-5%] hidden lg:block"
                 delay={0.8}
                 icon={Activity}
                 title="Total Exports"
@@ -253,7 +264,7 @@ export default function LandingPage() {
               </SmartCard>
 
               <SmartCard
-                className="bottom-[10%] left-[0%] hidden xl:block"
+                className="bottom-[5%] left-[-8%] hidden xl:block"
                 delay={1}
                 icon={Layout}
                 title="Pro Templates"
@@ -269,7 +280,7 @@ export default function LandingPage() {
               </SmartCard>
 
               <SmartCard
-                className="bottom-[5%] right-[0%] min-w-[200px] hidden lg:block"
+                className="bottom-[0%] right-[-5%] min-w-[200px] hidden lg:block"
                 delay={0.7}
                 icon={Share2}
                 title="Direct Share"
