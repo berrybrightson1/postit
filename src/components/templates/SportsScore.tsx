@@ -5,14 +5,8 @@ import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
 
 export const SportsScore = () => {
-    const { headline, body, footer, primaryColor, textColor, backgroundColor, mainImage, aspectRatio, backdropPosition, logo, brandingLine1, brandingLine2, fontFamily, autoFontSize, userTier, templateId, templateStyles } = useStore()
-    const bodySize = templateStyles[templateId]?.bodySize || 1
-
-    const fontVariable = fontFamily === 'Inter' ? 'var(--font-inter)' :
-        fontFamily === 'Playfair Display' ? 'var(--font-playfair)' :
-            fontFamily === 'Space Grotesk' ? 'var(--font-space)' :
-                fontFamily === 'Outfit' ? 'var(--font-outfit)' :
-                    fontFamily === 'Bebas Neue' ? 'var(--font-bebas)' : 'inherit'
+    const { headline, body, footer, primaryColor, textColor, backgroundColor, mainImage, aspectRatio, backdropPosition, logo, brandingLine1, brandingLine2, fontFamily, textAlign, autoFontSize, userTier, templateId } = useStore()
+    const bodySize = 1
 
     return (
         <div
@@ -24,7 +18,7 @@ export const SportsScore = () => {
             )}
             style={{
                 backgroundColor,
-                fontFamily: `${fontVariable}, sans-serif`
+                fontFamily: `'${fontFamily}', sans-serif`
             }}
         >
             {/* Main Image Backdrop */}
@@ -48,20 +42,21 @@ export const SportsScore = () => {
                     className="text-5xl font-black italic tracking-tighter uppercase leading-[0.8] mb-4 transform -skew-x-6"
                     style={{ color: primaryColor }}
                 >
-                    {headline}
+                    {headline || 'BERRY 2028'}
                 </h1>
 
                 {/* Body Content */}
                 <div className="bg-white p-4 transform -skew-x-6 border-l-8" style={{ borderColor: primaryColor }}>
                     <p
-                        className="text-black font-black uppercase leading-none transform skew-x-6"
+                        className="text-black font-black uppercase leading-none transform skew-x-6 whitespace-pre-wrap"
                         style={{
+                            textAlign,
                             fontSize: (autoFontSize && userTier === 'pro')
                                 ? `${(body.length < 30 ? 2 : body.length < 60 ? 1.5 : 1.2) * bodySize}rem`
                                 : `calc(1.5rem * ${bodySize})`
                         }}
                     >
-                        {body}
+                        {body || 'A Score For The People: Bright Future Guaranteed!'}
                     </p>
                 </div>
 
@@ -90,7 +85,7 @@ export const SportsScore = () => {
 
             {/* Side Branding Label */}
             <div className="absolute top-8 right-0 bg-white px-3 py-1 transform origin-right rotate-90 translate-x-full">
-                <span className="text-[10px] font-black tracking-widest text-black uppercase">{footer}</span>
+                <span className="text-[10px] font-black tracking-widest text-black uppercase">{footer || 'President Berry'}</span>
             </div>
         </div>
     )

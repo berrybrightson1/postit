@@ -123,6 +123,11 @@ export const TemplateSelector = () => {
                             onClick={() => {
                                 setActiveCategory(cat.id)
                                 setIsExpanded(true)
+                                // Auto-select the first variation of the selected category
+                                const firstVariation = variations[cat.id][0]
+                                if (firstVariation) {
+                                    setTemplateId(firstVariation.id)
+                                }
                             }}
                             className={cn(
                                 "flex items-center justify-center gap-3 px-4 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300 border-2",
@@ -180,7 +185,7 @@ export const TemplateSelector = () => {
                     isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
                 )}>
                     <div className="overflow-hidden">
-                        <div className="grid grid-cols-2 gap-4 pt-8 pb-20 px-4">
+                        <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4 pt-8 pb-20 px-4">
                             {variations[activeCategory].map((v) => {
                                 const isSelected = templateId === v.id
                                 const isLocked = !!v.isPremium && userTier === 'free'

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Zap, Share2, Layout, Smartphone, CheckCircle2, ChevronRight, MousePointer2, Activity } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Logo } from '@/components/common/Logo'
 
 const SmartCard = ({ children, className, delay, icon: Icon, title, value, color = "primary" }: { children?: React.ReactNode, className: string, delay: number, icon?: any, title?: string, value?: string, color?: string }) => (
   <motion.div
@@ -128,7 +129,7 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-[100] px-6 py-8">
         <div className="max-w-5xl mx-auto flex items-center justify-between bg-white/70 backdrop-blur-2xl border border-black/5 px-8 py-4 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <div className="flex items-center gap-2">
-            <img src="/logo/Asset 3.svg" alt="Postit Logo" className="h-7 w-auto" />
+            <Logo iconClassName="h-7" textClassName="text-xl" />
           </div>
 
           <div className="hidden md:flex items-center gap-8">
@@ -374,7 +375,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="py-12 md:py-20 bg-white border-t border-black/5">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center">
-          <img src="/logo/Asset 3.svg" alt="Postit Logo" className="h-6 w-auto opacity-20 mb-10 md:mb-12" />
+          <Logo iconClassName="h-6" textClassName="text-lg" className="opacity-20 mb-10 md:mb-12" />
           <div className="flex flex-wrap justify-center gap-6 md:gap-12 mb-10 md:mb-12">
             {['Privacy', 'Terms', 'Support', 'API'].map(i => (
               <a key={i} className="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors pointer-events-none">{i}</a>

@@ -10,7 +10,21 @@ import { TwitterStyle } from './templates/TwitterStyle'
 import { MagazineCover } from './templates/MagazineCover'
 
 export const TemplateRenderer = () => {
-    const { templateId } = useStore()
+    const { templateId, fontFamily } = useStore()
+
+    // Dynamically load the selected Google Font
+    React.useEffect(() => {
+        if (!fontFamily) return
+
+        const fontId = `font-canvas-${fontFamily.replace(/\s+/g, '-').toLowerCase()}`
+        if (document.getElementById(fontId)) return
+
+        const link = document.createElement('link')
+        link.id = fontId
+        link.rel = 'stylesheet'
+        link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/\s+/g, '+')}:wght@400;700;900&display=swap`
+        document.head.appendChild(link)
+    }, [fontFamily])
 
     switch (templateId) {
         case 'News_1':

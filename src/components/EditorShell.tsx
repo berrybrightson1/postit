@@ -8,6 +8,7 @@ import { RightPanel } from './editor/RightPanel'
 import { Crown, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { UndoRedoControls } from './editor/UndoRedoControls'
+import { Logo } from './common/Logo'
 
 export const EditorShell = () => {
     const isHydrated = useHydrated()
@@ -20,7 +21,7 @@ export const EditorShell = () => {
             {/* Mobile Header */}
             <div className="lg:hidden flex items-center justify-between p-4 bg-white/80 backdrop-blur-md border-b border-black/5 z-[100] gap-3">
                 <Link href="/" className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity">
-                    <img src="/logo/Asset 3.svg" alt="Postit Logo" className="h-6 w-auto" />
+                    <Logo iconClassName="h-6" textClassName="text-lg" />
                 </Link>
 
                 {/* Mobile Quick Controls - Grouped on the right */}

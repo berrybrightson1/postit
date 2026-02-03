@@ -32,19 +32,19 @@ export const TextInputs = () => {
     const config = {
         BreakingNews: {
             showHeadline: true,
-            headlineLabel: 'Category / Tag',
-            headlinePlaceholder: 'e.g. BREAKING NEWS',
-            footerLabel: 'Location / Agency',
-            footerPlaceholder: 'e.g. ACCRA, GHANA',
+            headlineLabel: 'Campaign Label',
+            headlinePlaceholder: 'e.g. BERRY 2028',
+            footerLabel: 'Issued By',
+            footerPlaceholder: 'e.g. THE WHITE HOUSE',
             showEmail: false,
             showBranding: true
         },
         PublicNotice: {
-            showHeadline: false,
-            headlineLabel: '',
-            headlinePlaceholder: '',
-            footerLabel: 'Phone / Whatsapp',
-            footerPlaceholder: 'e.g. +000 000 000 000',
+            showHeadline: true,
+            headlineLabel: 'Official Title',
+            headlinePlaceholder: 'e.g. EXECUTIVE ORDER',
+            footerLabel: 'Authorized By',
+            footerPlaceholder: 'e.g. PRESIDENT BERRY BRIGHTSON',
             showEmail: true,
             showBranding: false
         },
@@ -52,8 +52,8 @@ export const TextInputs = () => {
             showHeadline: false,
             headlineLabel: '',
             headlinePlaceholder: '',
-            footerLabel: 'Quote Owner',
-            footerPlaceholder: 'e.g. KWAME AMPONSAH',
+            footerLabel: 'Quote Author',
+            footerPlaceholder: 'e.g. PRESIDENT BERRY',
             showEmail: false,
             showBranding: false
         }
@@ -90,7 +90,7 @@ export const TextInputs = () => {
                 <textarea
                     value={body}
                     onChange={(e) => setBody(e.target.value)}
-                    placeholder="Enter your content here..."
+                    placeholder="Enter your Presidential decree or a funny Berry joke..."
                     className="pill-container w-full !p-3 min-h-[120px] resize-none leading-relaxed text-base"
                 />
             </div>

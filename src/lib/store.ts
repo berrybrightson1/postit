@@ -10,7 +10,8 @@ export type TemplateId =
     | 'PublicNotice' // Legacy/Alias for Notice_1
     | 'ViralQuote'   // Legacy/Alias for Quote_1
 export type AspectRatio = '1:1' | '9:16' | '4:5'
-export type FontFamily = 'Inter' | 'Playfair Display' | 'Space Grotesk' | 'Outfit' | 'Bebas Neue'
+export type FontFamily = string
+export type TextAlign = 'left' | 'center' | 'right'
 
 interface TemplateStyle {
     primaryColor: string
@@ -24,6 +25,7 @@ interface TemplateStyle {
     // Typography
     fontWeight: 'normal' | 'bold' | 'black'
     fontFamily: FontFamily
+    textAlign: TextAlign
 }
 
 export type OverlayType = 'text' | 'sticker' | 'image'
@@ -76,6 +78,7 @@ interface PostitState {
     user: { name: string, avatar: string } | null
     isProPanelOpen: boolean
     autoFontSize: boolean
+    textAlign: TextAlign
 
     // Actions
     setTemplateId: (id: TemplateId) => void
@@ -100,6 +103,13 @@ interface PostitState {
     setIsProPanelOpen: (open: boolean) => void
     setAutoFontSize: (auto: boolean) => void
 
+    // Smart Features
+    showReadabilityGradient: boolean
+    setShowReadabilityGradient: (show: boolean) => void
+    extractedColors: string[]
+    setExtractedColors: (colors: string[]) => void
+    applyVibe: (vibe: string) => void
+
     // Overlay Actions
     addOverlay: (item: Omit<OverlayItem, 'id'>) => void
     updateOverlay: (id: string, changes: Partial<OverlayItem>) => void
@@ -109,6 +119,7 @@ interface PostitState {
     setLetterSpacing: (size: number) => void
     setFontWeight: (weight: 'normal' | 'bold' | 'black') => void
     setFontFamily: (font: FontFamily) => void
+    setTextAlign: (align: TextAlign) => void
     reset: () => void
 }
 
@@ -126,7 +137,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.4,
         letterSpacing: 0,
         fontWeight: 'bold',
-        fontFamily: 'Inter'
+        fontFamily: 'Inter',
+        textAlign: 'center'
     },
     News_2: {
         primaryColor: '#E11D48',
@@ -138,7 +150,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.3,
         letterSpacing: -0.01,
         fontWeight: 'black',
-        fontFamily: 'Outfit'
+        fontFamily: 'Outfit',
+        textAlign: 'center'
     },
     News_3: {
         primaryColor: '#10B981',
@@ -150,7 +163,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.5,
         letterSpacing: 0.02,
         fontWeight: 'normal',
-        fontFamily: 'Space Grotesk'
+        fontFamily: 'Space Grotesk',
+        textAlign: 'left'
     },
     News_4: {
         primaryColor: '#F59E0B',
@@ -162,7 +176,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.2,
         letterSpacing: -0.05,
         fontWeight: 'black',
-        fontFamily: 'Bebas Neue'
+        fontFamily: 'Bebas Neue',
+        textAlign: 'center'
     },
     News_5: {
         primaryColor: '#6366F1',
@@ -174,7 +189,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.4,
         letterSpacing: 0,
         fontWeight: 'bold',
-        fontFamily: 'Inter'
+        fontFamily: 'Inter',
+        textAlign: 'center'
     },
 
     // Notice Variations
@@ -188,7 +204,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.6,
         letterSpacing: 0,
         fontWeight: 'normal',
-        fontFamily: 'Inter'
+        fontFamily: 'Inter',
+        textAlign: 'left'
     },
     Notice_2: {
         primaryColor: '#2563EB',
@@ -200,7 +217,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.4,
         letterSpacing: 0,
         fontWeight: 'bold',
-        fontFamily: 'Outfit'
+        fontFamily: 'Outfit',
+        textAlign: 'left'
     },
     Notice_3: {
         primaryColor: '#D97706',
@@ -212,7 +230,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.7,
         letterSpacing: 0.05,
         fontWeight: 'normal',
-        fontFamily: 'Space Grotesk'
+        fontFamily: 'Space Grotesk',
+        textAlign: 'center'
     },
     Notice_4: {
         primaryColor: '#4F46E5',
@@ -224,7 +243,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.5,
         letterSpacing: 0,
         fontWeight: 'bold',
-        fontFamily: 'Playfair Display'
+        fontFamily: 'Playfair Display',
+        textAlign: 'center'
     },
     Notice_5: {
         primaryColor: '#7C3AED',
@@ -236,7 +256,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.3,
         letterSpacing: -0.02,
         fontWeight: 'black',
-        fontFamily: 'Outfit'
+        fontFamily: 'Outfit',
+        textAlign: 'left'
     },
 
     // Quote Variations
@@ -250,7 +271,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.3,
         letterSpacing: -0.02,
         fontWeight: 'black',
-        fontFamily: 'Inter'
+        fontFamily: 'Inter',
+        textAlign: 'center'
     },
     Quote_2: {
         primaryColor: '#F472B6',
@@ -262,7 +284,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.2,
         letterSpacing: -0.04,
         fontWeight: 'black',
-        fontFamily: 'Playfair Display'
+        fontFamily: 'Playfair Display',
+        textAlign: 'left'
     },
     Quote_3: {
         primaryColor: '#8B5CF6',
@@ -274,7 +297,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.4,
         letterSpacing: 0,
         fontWeight: 'bold',
-        fontFamily: 'Space Grotesk'
+        fontFamily: 'Space Grotesk',
+        textAlign: 'center'
     },
     Quote_4: {
         primaryColor: '#10B981',
@@ -286,7 +310,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.5,
         letterSpacing: 0.02,
         fontWeight: 'normal',
-        fontFamily: 'Outfit'
+        fontFamily: 'Outfit',
+        textAlign: 'center'
     },
     Quote_5: {
         primaryColor: '#F97316',
@@ -298,7 +323,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.1,
         letterSpacing: -0.06,
         fontWeight: 'black',
-        fontFamily: 'Bebas Neue'
+        fontFamily: 'Bebas Neue',
+        textAlign: 'center'
     },
 
     SportsScore: {
@@ -311,7 +337,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.1,
         letterSpacing: -0.05,
         fontWeight: 'black',
-        fontFamily: 'Bebas Neue'
+        fontFamily: 'Bebas Neue',
+        textAlign: 'left'
     },
     TwitterStyle: {
         primaryColor: '#1DA1F2',
@@ -323,7 +350,8 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.5,
         letterSpacing: 0,
         fontWeight: 'normal',
-        fontFamily: 'Inter'
+        fontFamily: 'Inter',
+        textAlign: 'left'
     },
     MagazineCover: {
         primaryColor: '#FFFFFF',
@@ -335,11 +363,12 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
         lineHeight: 1.2,
         letterSpacing: 0.1,
         fontWeight: 'bold',
-        fontFamily: 'Playfair Display'
+        fontFamily: 'Playfair Display',
+        textAlign: 'center'
     },
-    BreakingNews: { primaryColor: '#3A2D9C', textColor: '#FFFFFF', backgroundColor: '#0f172a', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.0, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Inter' },
-    PublicNotice: { primaryColor: '#000000', textColor: '#111827', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.0, lineHeight: 1.6, letterSpacing: 0, fontWeight: 'normal', fontFamily: 'Inter' },
-    ViralQuote: { primaryColor: '#E11D48', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.2, lineHeight: 1.3, letterSpacing: -0.02, fontWeight: 'black', fontFamily: 'Inter' },
+    BreakingNews: { primaryColor: '#3A2D9C', textColor: '#FFFFFF', backgroundColor: '#0f172a', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.0, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Inter', textAlign: 'center' },
+    PublicNotice: { primaryColor: '#000000', textColor: '#111827', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.0, lineHeight: 1.6, letterSpacing: 0, fontWeight: 'normal', fontFamily: 'Inter', textAlign: 'left' },
+    ViralQuote: { primaryColor: '#E11D48', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.2, lineHeight: 1.3, letterSpacing: -0.02, fontWeight: 'black', fontFamily: 'Inter', textAlign: 'center' },
 }
 
 // Add fontFamily to existing defaultStyles
@@ -347,10 +376,10 @@ const defaultStyles: Record<TemplateId, TemplateStyle> = {
 
 const initialState = {
     templateId: 'BreakingNews' as TemplateId,
-    headline: 'BREAKING NEWS',
-    body: 'Enter your viral story here. Make it catchy and shareable!',
-    footer: 'POSTIT.APP',
-    email: 'hello@postit.app',
+    headline: 'PRESIDENT BERRY 2028',
+    body: 'Why did Berry Brightson become the President in 2028? Because he promised that the future would not only be Bright, but it would be absolutely Berry-tastic for everyone!',
+    footer: 'President Berry Brightson',
+    email: 'president@berry2028.gov',
     ...defaultStyles['BreakingNews'],
     mainImage: null,
     logo: null,
@@ -367,6 +396,8 @@ const initialState = {
     user: null as { name: string, avatar: string } | null,
     isProPanelOpen: false,
     autoFontSize: true,
+    showReadabilityGradient: false,
+    extractedColors: [],
 }
 
 import { persist } from 'zustand/middleware'
@@ -479,6 +510,71 @@ export const useStore = create<PostitState>()(
                 setIsProPanelOpen: (open) => set({ isProPanelOpen: open }),
                 setAutoFontSize: (auto) => set({ autoFontSize: auto }),
 
+                // Smart Features Actions
+                setShowReadabilityGradient: (show) => set({ showReadabilityGradient: show }),
+                setExtractedColors: (colors) => set({ extractedColors: colors }),
+                applyVibe: (vibe) => set((state) => {
+                    const styles = { ...state.templateStyles }
+                    const currentStyle = { ...styles[state.templateId] }
+
+                    let vibeStyle = {}
+                    switch (vibe) {
+                        case 'Good News':
+                            vibeStyle = {
+                                primaryColor: '#16A34A', // Green-600
+                                backgroundColor: '#F0FDF4', // Green-50
+                                textColor: '#14532D', // Green-900
+                                fontFamily: 'Inter',
+                                fontWeight: 'bold'
+                            }
+                            break;
+                        case 'Bad News':
+                            vibeStyle = {
+                                primaryColor: '#DC2626', // Red-600
+                                backgroundColor: '#000000',
+                                textColor: '#FFFFFF',
+                                fontFamily: 'Oswald',
+                                fontWeight: 'black'
+                            }
+                            break;
+                        case 'Sad':
+                            vibeStyle = {
+                                primaryColor: '#475569', // Slate-600
+                                backgroundColor: '#F8FAFC', // Slate-50
+                                textColor: '#334155', // Slate-700
+                                fontFamily: 'Merriweather',
+                                fontWeight: 'normal'
+                            }
+                            break;
+                        case 'Official':
+                            vibeStyle = {
+                                primaryColor: '#1E3A8A', // Blue-900
+                                backgroundColor: '#FFFFFF',
+                                textColor: '#1E293B', // Slate-800
+                                fontFamily: 'Playfair Display',
+                                fontWeight: 'bold'
+                            }
+                            break;
+                        case 'Meme':
+                            vibeStyle = {
+                                primaryColor: '#DB2777', // Pink-600
+                                backgroundColor: '#FEF08A', // Yellow-200
+                                textColor: '#000000',
+                                fontFamily: 'Comic Sans MS',
+                                fontWeight: 'bold'
+                            }
+                            break;
+                    }
+
+                    return {
+                        ...vibeStyle,
+                        templateStyles: {
+                            ...styles,
+                            [state.templateId]: { ...currentStyle, ...vibeStyle }
+                        }
+                    }
+                }),
+
                 // Overlay Actions
                 addOverlay: (item) => {
                     const id = Math.random().toString(36).substring(2, 9)
@@ -541,6 +637,19 @@ export const useStore = create<PostitState>()(
                             [templateId]: {
                                 ...templateStyles[templateId],
                                 fontFamily
+                            }
+                        }
+                    })
+                },
+                setTextAlign: (textAlign) => {
+                    const { templateId, templateStyles } = get()
+                    set({
+                        textAlign,
+                        templateStyles: {
+                            ...templateStyles,
+                            [templateId]: {
+                                ...templateStyles[templateId],
+                                textAlign
                             }
                         }
                     })

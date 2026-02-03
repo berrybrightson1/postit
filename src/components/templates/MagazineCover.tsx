@@ -5,14 +5,8 @@ import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
 
 export const MagazineCover = () => {
-    const { headline, body, footer, primaryColor, textColor, backgroundColor, mainImage, aspectRatio, backdropPosition, logo, brandingLine1, brandingLine2, fontFamily, autoFontSize, userTier, templateId, templateStyles } = useStore()
+    const { headline, body, footer, primaryColor, textColor, backgroundColor, mainImage, aspectRatio, backdropPosition, logo, brandingLine1, brandingLine2, fontFamily, textAlign, autoFontSize, userTier, templateId, templateStyles } = useStore()
     const bodySize = templateStyles[templateId]?.bodySize || 1
-
-    const fontVariable = fontFamily === 'Inter' ? 'var(--font-inter)' :
-        fontFamily === 'Playfair Display' ? 'var(--font-playfair)' :
-            fontFamily === 'Space Grotesk' ? 'var(--font-space)' :
-                fontFamily === 'Outfit' ? 'var(--font-outfit)' :
-                    fontFamily === 'Bebas Neue' ? 'var(--font-bebas)' : 'inherit'
 
     // Magazines usually have a main big title (Headline) and sub-headlines (Body)
     const subHeadlines = body.split('\n').filter(line => line.trim() !== '')
@@ -25,7 +19,7 @@ export const MagazineCover = () => {
                 aspectRatio === '1:1' ? "aspect-square w-full" :
                     aspectRatio === '9:16' ? "aspect-[9/16] w-full max-h-[85vh]" : "aspect-[4/5] w-full"
             )}
-            style={{ fontFamily: `${fontVariable}, sans-serif` }}
+            style={{ fontFamily: `'${fontFamily}', sans-serif` }}
         >
             {/* Background Image - The "Cover Model" */}
             <div className="absolute inset-0 z-0">
@@ -74,6 +68,7 @@ export const MagazineCover = () => {
                             <span
                                 className="font-black text-white leading-none uppercase italic"
                                 style={{
+                                    textAlign,
                                     fontSize: (autoFontSize && userTier === 'pro')
                                         ? `${(text.length < 20 ? 1.5 : 1.25) * bodySize}rem`
                                         : `calc(1.5rem * ${bodySize})`
@@ -87,6 +82,7 @@ export const MagazineCover = () => {
                         <span
                             className="font-black text-white leading-tight uppercase italic drop-shadow-lg"
                             style={{
+                                textAlign,
                                 fontSize: (autoFontSize && userTier === 'pro')
                                     ? `${(body.length < 50 ? 2.5 : 2) * bodySize}rem`
                                     : `calc(2.5rem * ${bodySize})`

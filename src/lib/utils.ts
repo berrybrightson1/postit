@@ -11,6 +11,21 @@ export const fontWeightMap = {
     'black': 900
 } as const
 
+export type Category = 'News' | 'Notice' | 'Quote' | 'Special'
+export type TemplateId = 'BreakingNews' | 'PublicNotice' | 'ViralQuote' | 'News_1' | 'News_2' | 'Notice_1' | 'Notice_2' | 'Quote_1' | 'Quote_2' | 'Special_1' | 'Special_2'
+
+export function getTemplateCategory(id: string): Category {
+    if (id.startsWith('News_') || id === 'BreakingNews') return 'News'
+    if (id.startsWith('Notice_') || id === 'PublicNotice') return 'Notice'
+    if (id.startsWith('Quote_') || id === 'ViralQuote') return 'Quote'
+    return 'Special'
+}
+
+export function isMediaTemplate(id: string): boolean {
+    const category = getTemplateCategory(id)
+    return category === 'News' || category === 'Special' || category === 'Notice'
+}
+
 /**
  * Compresses a base64 image string to a target size in KB.
  * Uses canvas for resizing and quality adjustment.

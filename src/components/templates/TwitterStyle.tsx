@@ -6,14 +6,8 @@ import { cn } from '@/lib/utils'
 import { CheckCircle2, Heart, MessageCircle, Share2, Repeat2 } from 'lucide-react'
 
 export const TwitterStyle = () => {
-    const { headline, body, footer, primaryColor, textColor, backgroundColor, mainImage, aspectRatio, backdropPosition, logo, brandingLine1, brandingLine2, fontFamily, autoFontSize, userTier, templateId, templateStyles } = useStore()
+    const { headline, body, footer, primaryColor, textColor, backgroundColor, mainImage, aspectRatio, backdropPosition, logo, brandingLine1, brandingLine2, fontFamily, textAlign, autoFontSize, userTier, templateId, templateStyles } = useStore()
     const bodySize = templateStyles[templateId]?.bodySize || 1
-
-    const fontVariable = fontFamily === 'Inter' ? 'var(--font-inter)' :
-        fontFamily === 'Playfair Display' ? 'var(--font-playfair)' :
-            fontFamily === 'Space Grotesk' ? 'var(--font-space)' :
-                fontFamily === 'Outfit' ? 'var(--font-outfit)' :
-                    fontFamily === 'Bebas Neue' ? 'var(--font-bebas)' : 'inherit'
 
     const brandName = footer.includes('.') ? footer.split('.')[0] : footer
     const handle = footer.toLowerCase().replace(/\s+/g, '')
@@ -30,7 +24,7 @@ export const TwitterStyle = () => {
         >
             <div
                 className="w-full bg-white rounded-2xl p-6 shadow-xl border border-gray-100 flex flex-col gap-4 max-w-lg"
-                style={{ fontFamily: `${fontVariable}, sans-serif` }}
+                style={{ fontFamily: `'${fontFamily}', sans-serif` }}
             >
                 {/* Header */}
                 <div className="flex items-center justify-between">
@@ -58,8 +52,9 @@ export const TwitterStyle = () => {
                 {/* Body */}
                 <div className="bg-white p-4 transform -skew-x-6 border-l-8 border-[var(--primary)]" style={{ '--primary': primaryColor } as any}>
                     <p
-                        className="text-black font-black uppercase leading-none transform skew-x-6"
+                        className="text-black font-black uppercase leading-tight transform skew-x-6 whitespace-pre-wrap"
                         style={{
+                            textAlign,
                             fontSize: (autoFontSize && userTier === 'pro')
                                 ? `${(body.length < 30 ? 2 : body.length < 60 ? 1.5 : 1.2) * bodySize}rem`
                                 : `calc(1.5rem * ${bodySize})`
