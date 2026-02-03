@@ -50,8 +50,10 @@ const IpadMockup = ({ className, delay }: { className?: string, delay: number })
   const [currentSlide, setCurrentSlide] = React.useState(0)
   const slides = [
     '/images/landing/localhost_3000_dashboard(Nest Hub Max) (1).png',
+    '/images/landing/localhost_3000_dashboard(Nest Hub Max) (2).png',
     '/images/landing/localhost_3000_dashboard(Nest Hub Max) (3).png',
-    '/images/landing/localhost_3000_dashboard(Nest Hub Max) (5).png',
+    '/images/landing/localhost_3000_dashboard(Nest Hub Max) (4).png',
+    '/images/landing/localhost_3000_dashboard(Nest Hub Max) (6).png',
   ]
 
   React.useEffect(() => {
@@ -77,7 +79,7 @@ const IpadMockup = ({ className, delay }: { className?: string, delay: number })
         <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none" />
 
         {/* Inner Screen Area */}
-        <div className="absolute inset-[8px] md:inset-[12px] rounded-[1.6rem] md:rounded-[2.8rem] bg-black overflow-hidden border-[2px] md:border-[4px] border-[#0a0a0a]">
+        <div className="absolute inset-[8px] md:inset-[12px] rounded-[1.6rem] md:rounded-[2.8rem] bg-black overflow-hidden border-[1px] border-[#0a0a0a]">
           {/* The Notch */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 md:w-48 h-5 md:h-7 bg-black rounded-b-2xl md:rounded-b-3xl z-30 flex items-center justify-center gap-2 md:gap-3 border-x border-b border-white/5">
             <div className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-[#111] shadow-[inset_0_1px_2px_rgba(255,255,255,0.1)]" />
@@ -210,7 +212,7 @@ export default function LandingPage() {
           </div>
 
           {/* Multi-Mockup Hero Area */}
-          <div className="mt-12 md:mt-24 relative max-w-[1400px] mx-auto min-h-[300px] md:min-h-[600px] flex items-center justify-center pt-10 md:pt-20">
+          <div className="mt-4 md:mt-8 relative max-w-[1400px] mx-auto min-h-[300px] md:min-h-[600px] flex items-center justify-center pt-10 md:pt-20">
             {/* Background Orbits */}
             <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-visible">
               <motion.div
@@ -382,7 +384,7 @@ export default function LandingPage() {
             ))}
           </div>
           <div className="w-full max-w-[200px] h-px bg-black/5 mb-8 md:hidden" />
-          <p className="text-[9px] md:text-[10px] font-bold text-gray-300 uppercase tracking-widest text-center">© 2026 POSTIT STUDIO. ALL RIGHTS RESERVED.</p>
+          <p className="text-[9px] md:text-[10px] font-bold text-gray-300 uppercase tracking-widest text-center">© 2026 POSTIT STUDIO. ALL RIGHTS RESERVED. | REBRYCREATIVES</p>
         </div>
       </footer>
     </div>
