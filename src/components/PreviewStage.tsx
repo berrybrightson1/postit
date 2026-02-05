@@ -4,6 +4,7 @@ import React, { useRef } from 'react'
 import { useStore } from '@/lib/store'
 import { TemplateRenderer } from './TemplateRenderer'
 import { DraggableOverlay } from './canvas/DraggableOverlay'
+import { TemplateLogo } from './templates/shared/TemplateLogo'
 import { cn } from '@/lib/utils'
 
 export const PreviewStage = () => {
@@ -26,6 +27,7 @@ export const PreviewStage = () => {
                     )}
                 >
                     <TemplateRenderer />
+                    <TemplateLogo mode="draggable" containerClassName="w-full h-full pointer-events-none" />
 
                     {/* Overlays Layer */}
                     <div className="absolute inset-0 z-50 pointer-events-none">
