@@ -28,7 +28,7 @@ export const TemplateLogo = ({ className, style, containerClassName, mode = 'sta
         <div
             className={cn(
                 "absolute z-[100] p-2 group transition-all",
-                mode === 'draggable' ? "cursor-move hover:ring-2 hover:ring-primary/20 rounded-lg" : "pointer-events-none",
+                mode === 'draggable' ? "cursor-move hover:ring-2 hover:ring-primary/20 rounded-lg pointer-events-auto" : "pointer-events-none",
                 containerClassName
             )}
             style={{

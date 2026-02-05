@@ -195,7 +195,7 @@ const initialState = {
     email: 'president@berry2028.gov',
     ...defaultStyles.News_6,
     mainImage: null,
-    logo: '/images/landing/logo stroke.png',
+    logo: '/images/landing/logo-stroke.png',
     profileImage: '/images/landing/round.jpeg',
     brandingLine1: 'BERRY 2028',
     brandingLine2: 'CAMPAIGN HQ',
