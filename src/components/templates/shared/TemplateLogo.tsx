@@ -12,7 +12,7 @@ interface TemplateLogoProps {
 }
 
 export const TemplateLogo = ({ className, style, containerClassName, mode = 'static' }: TemplateLogoProps) => {
-    const { logo, isLogoDraggable, logoPosition, setLogoPosition } = useStore()
+    const { logo, isLogoDraggable, logoPosition, setLogoPosition, setLogo } = useStore()
 
     if (!logo) return null
 
@@ -81,9 +81,21 @@ export const TemplateLogo = ({ className, style, containerClassName, mode = 'sta
                 draggable={false}
             />
             {mode === 'draggable' && (
-                <div className="absolute -top-2 -right-2 bg-primary text-white text-[8px] font-black px-1.5 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
-                    DRAG
-                </div>
+                <>
+                    <div className="absolute -top-2 -right-2 bg-primary text-white text-[8px] font-black px-1.5 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
+                        DRAG
+                    </div>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation() // Prevent drag start when clicking close
+                            setLogo(null)
+                        }}
+                        className="absolute -top-2 -left-2 bg-red-500 text-white w-4 h-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg flex items-center justify-center hover:bg-red-600 cursor-pointer pointer-events-auto"
+                        title="Remove Logo"
+                    >
+                        <span className="text-[10px] font-bold leading-none select-none">&times;</span>
+                    </button>
+                </>
             )}
         </div>
     )
