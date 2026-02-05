@@ -23,7 +23,8 @@ export const PreviewStage = () => {
                         "bg-white shadow-2xl relative overflow-hidden transition-all duration-500 ease-in-out flex flex-col items-stretch",
                         aspectRatio === '1:1' ? 'aspect-square w-full' :
                             aspectRatio === '4:5' ? 'aspect-[4/5] w-full max-h-[75dvh] lg:max-h-[85vh]' :
-                                'aspect-[9/16] w-full max-h-[75dvh] lg:max-h-[85vh]'
+                                aspectRatio === '16:9' ? 'aspect-video w-full' :
+                                    'aspect-[9/16] w-full max-h-[75dvh] lg:max-h-[85vh]'
                     )}
                 >
                     <TemplateRenderer />

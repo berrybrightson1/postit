@@ -13,9 +13,17 @@ import { useStore } from '@/lib/store'
 import { Trash2 } from 'lucide-react'
 import { UndoRedoControls } from './UndoRedoControls'
 import { Logo } from '../common/Logo'
+import { isMediaTemplate } from '@/lib/utils'
 
 export const Controls = () => {
-    const { reset } = useStore()
+    const { reset, templateId, aspectRatio, setAspectRatio } = useStore() // Add aspectRatio, setAspectRatio
+
+    // Force 16:9 for YouTube Thumbnail to override any persisted state (Desktop & Mobile)
+    React.useEffect(() => {
+        if (templateId === 'YouTubeThumbnail' && aspectRatio !== '16:9') {
+            setAspectRatio('16:9')
+        }
+    }, [templateId, aspectRatio, setAspectRatio])
 
     return (
         <div className="flex flex-col gap-8 lg:gap-12 pb-20">
@@ -55,12 +63,14 @@ export const Controls = () => {
                 <AestheticsSettings />
             </section>
 
-            <section>
-                <h3 className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-300 mb-6">4 // Enhancements</h3>
-                <div className="flex flex-col gap-6">
-                    <MediaUpload />
-                </div>
-            </section>
+            {isMediaTemplate(templateId) && (
+                <section>
+                    <h3 className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-300 mb-6">4 // Enhancements</h3>
+                    <div className="flex flex-col gap-6">
+                        <MediaUpload />
+                    </div>
+                </section>
+            )}
 
             <section>
                 <h3 className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-300 mb-6">5 // Finish</h3>

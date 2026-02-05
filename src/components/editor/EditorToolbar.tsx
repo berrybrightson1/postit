@@ -134,7 +134,6 @@ export const EditorToolbar = () => {
         recentAccents,
         extractedColors,
         addOverlay,
-        resetCurrentTemplate,
         mainImage,
         setMainImage
     } = useStore()
@@ -217,8 +216,13 @@ export const EditorToolbar = () => {
             <div className="flex items-center bg-white/70 backdrop-blur-md px-1 py-1 lg:px-2 rounded-2xl border border-black/5 shadow-sm group">
                 <div className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-6 px-3 py-1 lg:px-4 pr-10 lg:pr-12 md:pr-14">
                     <div className="flex items-center gap-1 bg-gray-100/80 p-1 rounded-xl shrink-0">
-                        {(['1:1', '4:5', '9:16'] as const)
-                            .filter(ratio => templateId === 'PublicNotice' ? ratio !== '1:1' : true)
+                        {(['1:1', '4:5', '9:16', '16:9'] as const)
+                            .filter(ratio => {
+                                if (templateId === 'YouTubeThumbnail') return ratio === '16:9'
+                                if (templateId === 'PublicNotice') return ratio !== '1:1'
+                                if (ratio === '16:9') return false
+                                return true
+                            })
                             .map((ratio) => (
                                 <button
                                     key={ratio}
@@ -231,6 +235,7 @@ export const EditorToolbar = () => {
                                     {ratio === '1:1' && <Square size={10} strokeWidth={3} />}
                                     {ratio === '4:5' && <Smartphone size={10} strokeWidth={3} className="rotate-90" />}
                                     {ratio === '9:16' && <Smartphone size={10} strokeWidth={3} />}
+                                    {ratio === '16:9' && <Smartphone size={10} strokeWidth={3} className="rotate-90" />}
                                     {ratio}
                                 </button>
                             ))}
@@ -331,7 +336,7 @@ export const EditorToolbar = () => {
 
                 <div className="px-3 lg:px-4 shrink-0 bg-white/50 backdrop-blur-sm rounded-r-2xl border-l border-black/5 flex items-center justify-center h-full group-hover:bg-white transition-colors duration-300">
                     <button
-                        onClick={resetCurrentTemplate}
+                        onClick={reset}
                         className="p-2 text-gray-300 hover:text-red-500 transition-colors hover:bg-white rounded-lg border border-transparent hover:border-black/5 flex items-center justify-center shrink-0"
                         title="Reset current design (reverts colors and text)"
                     >
@@ -444,15 +449,18 @@ export const EditorToolbar = () => {
                         smartColors={extractedColors}
                         userTier={userTier}
                     />
-                    <ToolbarColorPicker
-                        label="Accent"
-                        value={primaryColor}
-                        onChange={setPrimaryColor}
-                        icon={Pipette}
-                        recentColors={recentAccents}
-                        smartColors={extractedColors}
-                        userTier={userTier}
-                    />
+                    {/* Hide ACCENT for Facebook template */}
+                    {templateId !== 'FacebookPost' && (
+                        <ToolbarColorPicker
+                            label="Accent"
+                            value={primaryColor}
+                            onChange={setPrimaryColor}
+                            icon={Pipette}
+                            recentColors={recentAccents}
+                            smartColors={extractedColors}
+                            userTier={userTier}
+                        />
+                    )}
                 </div>
             </div>
             <input

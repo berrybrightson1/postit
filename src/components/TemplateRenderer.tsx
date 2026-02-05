@@ -8,6 +8,9 @@ import { ViralQuote } from './templates/ViralQuote'
 import { SportsScore } from './templates/SportsScore'
 import { TwitterStyle } from './templates/TwitterStyle'
 import { MagazineCover } from './templates/MagazineCover'
+import { InstagramPost } from './templates/InstagramPost'
+import { FacebookPost } from './templates/FacebookPost'
+import { YouTubeThumbnail } from './templates/YouTubeThumbnail'
 
 export const TemplateRenderer = () => {
     const { templateId, fontFamily } = useStore()
@@ -53,6 +56,12 @@ export const TemplateRenderer = () => {
             return <SportsScore />
         case 'TwitterStyle':
             return <TwitterStyle />
+        case 'InstagramPost':
+            return <InstagramPost />
+        case 'FacebookPost':
+            return <FacebookPost />
+        case 'YouTubeThumbnail':
+            return <YouTubeThumbnail />
         case 'MagazineCover':
             return <MagazineCover />
         default:

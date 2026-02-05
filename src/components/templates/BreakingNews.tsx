@@ -281,13 +281,16 @@ export const BreakingNews = () => {
                         {profileImage ? (
                             <img src={profileImage} className="w-full h-full object-cover" alt="" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[10px] font-black text-gray-400">PLAYER</div>
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 text-gray-400 gap-1 p-2 text-center">
+                                <span className="text-[20px] leading-none">+</span>
+                                <span className="text-[8px] font-black leading-none uppercase">Add Profile</span>
+                            </div>
                         )}
                     </div>
-                </div>
+                </div >
 
                 {/* Content Area - White background */}
-                <div className="flex-1 bg-white p-8 lg:p-14 pb-6 lg:pb-8 relative z-10 flex flex-col">
+                < div className="flex-1 bg-white p-8 lg:p-14 pb-6 lg:pb-8 relative z-10 flex flex-col" >
                     <p
                         className="text-2xl lg:text-5xl font-black leading-[1.15] tracking-tight transition-all duration-300"
                         style={{
@@ -315,8 +318,8 @@ export const BreakingNews = () => {
                             </div>
                         )}
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
         )
     }
 

@@ -6,10 +6,11 @@ export type TemplateId =
     | 'Notice_1' | 'Notice_2' | 'Notice_3' | 'Notice_4' | 'Notice_5'
     | 'Quote_1' | 'Quote_2' | 'Quote_3' | 'Quote_4' | 'Quote_5'
     | 'SportsScore' | 'TwitterStyle' | 'MagazineCover'
+    | 'InstagramPost' | 'FacebookPost' | 'YouTubeThumbnail'
     | 'BreakingNews' // Legacy/Alias for News_1
     | 'PublicNotice' // Legacy/Alias for Notice_1
     | 'ViralQuote'   // Legacy/Alias for Quote_1
-export type AspectRatio = '1:1' | '9:16' | '4:5'
+export type AspectRatio = '1:1' | '9:16' | '4:5' | '16:9'
 export type FontFamily = string
 export type TextAlign = 'left' | 'center' | 'right'
 
@@ -115,6 +116,11 @@ interface PostitState {
     extractedColors: string[]
     setExtractedColors: (colors: string[]) => void
     applyVibe: (vibe: string) => void
+    setVibe: (vibe: string) => void
+
+    // Onboarding
+    hasOnboarded: boolean
+    setHasOnboarded: (val: boolean) => void
 
     // Overlay Actions
     addOverlay: (item: Omit<OverlayItem, 'id'>) => void
@@ -126,36 +132,44 @@ interface PostitState {
     setFontWeight: (weight: 'normal' | 'bold' | 'black') => void
     setFontFamily: (font: FontFamily) => void
     setTextAlign: (align: TextAlign) => void
-    resetCurrentTemplate: () => void
+    setTemplateAndReset: (id: TemplateId) => void
     reset: () => void
 }
 
 export const defaultPalette = ['#3A2D9C', '#CE1126', '#006B3F', '#FCD116', '#000000', '#FFFFFF', '#E11D48']
 
+// Default platform logos as SVG data URIs
+const FACEBOOK_LOGO = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHJ4PSI4IiBmaWxsPSIjMTg3N0YyIi8+PHBhdGggZD0iTTI2LjUgMjVIMzBMMzEgMjBIMjYuNVYxNy41QzI2LjUgMTYgMjYuNSAxNC41IDI5IDE0LjVIMzFWMTAuMjVDMzAuMzUgMTAuMTc1IDI4LjcgMTAgMjcgMTBDMjMuMiAxMCAyMC41IDEyLjQzNzUgMjAuNSAxNi43NVYyMEgxNlYyNUgyMC41VjM4SDI2LjVWMjVaIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg=='
+const INSTAGRAM_LOGO = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImlnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNTE1QkQ0OyIvPjxzdG9wIG9mZnNldD0iNTAlIiBzdHlsZT0ic3RvcC1jb2xvcjojOTUzN0ZGOyIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0UxMzA2QzsiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHJ4PSIxMiIgZmlsbD0idXJsKCNpZykiLz48cGF0aCBkPSJNMjQgMTJDMTkuNiAxMiAxOS4xIDEyLjAyIDE3LjMgMTIuMUMxNS41IDEyLjE4IDEzLjkgMTIuNTUgMTIuNSAxMy4xQzExLjEgMTMuNjUgOS45IDE0LjQgOC43IDE1LjZDNy41IDE2LjggNi43NSAxOCA2LjIgMTkuNEM1LjY1IDIwLjggNS4yOCAyMi40IDUuMiAyNC4yQzUuMTIgMjYgNS4xIDI2LjUgNS4xIDMwLjlDNS4xIDM1LjMgNS4xMiAzNS44IDUuMiAzNy42QzUuMjggMzkuNCA1LjY1IDQxIDYuMiA0Mi40QzYuNzUgNDMuOCA3LjUgNDUgOC43IDQ2LjJDOS45IDQ3LjQgMTEuMSA0OC4xNSAxMi41IDQ4LjdDMTMuOSA0OS4yNSAxNS41IDQ5LjYyIDE3LjMgNDkuN0MxOS4xIDQ5Ljc4IDE5LjYgNDkuOCAyNCA0OS44QzI4LjQgNDkuOCAyOC45IDQ5Ljc4IDMwLjcgNDkuN0MzMi41IDQ5LjYyIDM0LjEgNDkuMjUgMzUuNSA0OC43QzM2LjkgNDguMTUgMzguMSA0Ny40IDM5LjMgNDYuMkM0MC41IDQ1IDQxLjI1IDQzLjggNDEuOCA0Mi40QzQyLjM1IDQxIDQyLjcyIDM5LjQgNDIuOCAzNy42QzQyLjg4IDM1LjggNDIuOSAzNS4zIDQyLjkgMzAuOUM0Mi45IDI2LjUgNDIuODggMjYgNDIuOCAyNC4yQzQyLjcyIDIyLjQgNDIuMzUgMjAuOCA0MS44IDE5LjRDNDEuMjUgMTggNDAuNSAxNi44IDM5LjMgMTUuNkMzOC4xIDE0LjQgMzYuOSAxMy42NSAzNS41IDEzLjFDMzQuMSAxMi41NSAzMi41IDEyLjE4IDMwLjcgMTIuMUMyOC45IDEyLjAyIDI4LjQgMTIgMjQgMTJaTTI0IDE1LjZDMjguMyAxNS42IDI4Ljc1IDE1LjYyIDMwLjUgMTUuN0MzMi4yIDE1Ljc4IDMzLjEgMTYuMTUgMzMuNyAxNi40QzM0LjUgMTYuNzUgMzUuMSAxNy4xNSAzNS43IDE3Ljc1QzM2LjMgMTguMzUgMzYuNyAxOC45NSAzNy4wNSAxOS43NUMzNy4zIDIwLjM1IDM3LjY3IDIxLjI1IDM3Ljc1IDIyLjk1QzM3LjgzIDI0Ljc1IDM3Ljg1IDI1LjIgMzcuODUgMjkuNUMzNy44NSAzMy44IDM3LjgzIDM0LjI1IDM3Ljc1IDM2LjA1QzM3LjY3IDM3Ljc1IDM3LjMgMzguNjUgMzcuMDUgMzkuMjVDMzYuNyA0MC4wNSAzNi4zIDQwLjY1IDM1LjcgNDEuMjVDMzUuMSA0MS44NSAzNC41IDQyLjI1IDMzLjcgNDIuNkMzMy4xIDQyLjg1IDMyLjIgNDMuMjIgMzAuNSA0My4zQzI4LjcgNDMuMzggMjguMjUgNDMuNCAyNCA0My40QzE5Ljc1IDQzLjQgMTkuMyA0My4zOCAxNy41IDQzLjNDMTUuOCA0My4yMiAxNC45IDQyLjg1IDE0LjMgNDIuNkMxMy41IDQyLjI1IDEyLjkgNDEuODUgMTIuMyA0MS4yNUMxMS43IDQwLjY1IDExLjMgNDAuMDUgMTAuOTUgMzkuMjVDMTAuNyAzOC42NSAxMC4zMyAzNy43NSAxMC4yNSAzNi4wNUMxMC4xNyAzNC4yNSAxMC4xNSAzMy44IDEwLjE1IDI5LjVDMTAuMTUgMjUuMiAxMC4xNyAyNC43NSAxMC4yNSAyMi45NUMxMC4zMyAyMS4yNSAxMC43IDIwLjM1IDEwLjk1IDE5Ljc1QzExLjMgMTguOTUgMTEuNyAxOC4zNSAxMi4zIDE3Ljc1QzEyLjkgMTcuMTUgMTMuNSAxNi43NSAxNC4zIDE2LjRDMTQuOSAxNi4xNSAxNS44IDE1Ljc4IDE3LjUgMTUuN0MxOS4yNSAxNS42MiAxOS43IDE1LjYgMjQgMTUuNloiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTI0IDMyLjVDMjAuNCAzMi41IDE3LjUgMjkuNiAxNy41IDI2QzE3LjUgMjIuNCAyMC40IDE5LjUgMjQgMTkuNUMyNy42IDE5LjUgMzAuNSAyMi40IDMwLjUgMjZDMzAuNSAyOS42IDI3LjYgMzIuNSAyNCAzMi41Wk0yNCAyMy4xQzIyLjQgMjMuMSAyMS4xIDI0LjQgMjEuMSAyNkMyMS4xIDI3LjYgMjIuNCAyOC45IDI0IDI4LjlDMjUuNiAyOC45IDI2LjkgMjcuNiAyNi45IDI2QzI2LjkgMjQuNCAyNS42IDIzLjEgMjQgMjMuMVoiIGZpbGw9IndoaXRlIi8+PGNpcmNsZSBjeD0iMzEiIGN5PSIxOCIgcj0iMS41IiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg=='
+const TWITTER_X_LOGO = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHJ4PSI4IiBmaWxsPSIjMDAwMDAwIi8+PHBhdGggZD0iTTI3LjUgMjRMMzUuNSAxNEgzMy41TDI2LjUgMjIuNUwyMSAxNEgxMi41TDIxIDI1TDEyLjUgMzVIMTQuNUwyMS41IDI2LjVMMjcgMzVIMzUuNUwyNy41IDI0WiIgZmlsbD0id2hpdGUiLz48L3N2Zz4='
+
 const defaultStyles: Record<TemplateId, TemplateStyle> = {
-    News_1: { primaryColor: '#3A2D9C', textColor: '#FFFFFF', backgroundColor: '#0f172a', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.0, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Inter', textAlign: 'center' },
-    News_2: { primaryColor: '#E11D48', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.1, lineHeight: 1.3, letterSpacing: -0.01, fontWeight: 'black', fontFamily: 'Outfit', textAlign: 'center' },
-    News_3: { primaryColor: '#10B981', textColor: '#FFFFFF', backgroundColor: '#064E3B', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.9, lineHeight: 1.5, letterSpacing: 0.02, fontWeight: 'normal', fontFamily: 'Space Grotesk', textAlign: 'left' },
-    News_4: { primaryColor: '#F59E0B', textColor: '#111827', backgroundColor: '#FFFBEB', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 1.2, lineHeight: 1.2, letterSpacing: -0.05, fontWeight: 'black', fontFamily: 'Bebas Neue', textAlign: 'center' },
-    News_5: { primaryColor: '#6366F1', textColor: '#FFFFFF', backgroundColor: '#1E1B4B', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 1.0, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Inter', textAlign: 'center' },
-    News_6: { primaryColor: '#E11D48', textColor: '#0F172A', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.0, lineHeight: 1.2, letterSpacing: -0.02, fontWeight: 'black', fontFamily: 'Inter', textAlign: 'left' },
-    Notice_1: { primaryColor: '#000000', textColor: '#111827', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.0, lineHeight: 1.6, letterSpacing: 0, fontWeight: 'normal', fontFamily: 'Inter', textAlign: 'left' },
-    Notice_2: { primaryColor: '#2563EB', textColor: '#FFFFFF', backgroundColor: '#EFF6FF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.1, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Outfit', textAlign: 'left' },
-    Notice_3: { primaryColor: '#D97706', textColor: '#111827', backgroundColor: '#FEF3C7', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.9, lineHeight: 1.7, letterSpacing: 0.05, fontWeight: 'normal', fontFamily: 'Space Grotesk', textAlign: 'center' },
-    Notice_4: { primaryColor: '#4F46E5', textColor: '#FFFFFF', backgroundColor: '#EEF2FF', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 1.0, lineHeight: 1.5, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Playfair Display', textAlign: 'center' },
-    Notice_5: { primaryColor: '#7C3AED', textColor: '#FFFFFF', backgroundColor: '#F5F3FF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.2, lineHeight: 1.3, letterSpacing: -0.02, fontWeight: 'black', fontFamily: 'Outfit', textAlign: 'left' },
-    Quote_1: { primaryColor: '#E11D48', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.2, lineHeight: 1.3, letterSpacing: -0.02, fontWeight: 'black', fontFamily: 'Inter', textAlign: 'center' },
-    Quote_2: { primaryColor: '#F472B6', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 1.3, lineHeight: 1.2, letterSpacing: -0.04, fontWeight: 'black', fontFamily: 'Playfair Display', textAlign: 'left' },
-    Quote_3: { primaryColor: '#8B5CF6', textColor: '#FFFFFF', backgroundColor: '#1E1B4B', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 1.1, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Space Grotesk', textAlign: 'center' },
-    Quote_4: { primaryColor: '#10B981', textColor: '#FFFFFF', backgroundColor: '#064E3B', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.0, lineHeight: 1.5, letterSpacing: 0.02, fontWeight: 'normal', fontFamily: 'Outfit', textAlign: 'center' },
-    Quote_5: { primaryColor: '#F97316', textColor: '#FFFFFF', backgroundColor: '#262626', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 1.4, lineHeight: 1.1, letterSpacing: -0.06, fontWeight: 'black', fontFamily: 'Bebas Neue', textAlign: 'center' },
-    SportsScore: { primaryColor: '#FCD116', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 1.5, lineHeight: 1.1, letterSpacing: -0.05, fontWeight: 'black', fontFamily: 'Bebas Neue', textAlign: 'left' },
-    TwitterStyle: { primaryColor: '#1DA1F2', textColor: '#000000', backgroundColor: '#FFFFFF', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 1.0, lineHeight: 1.5, letterSpacing: 0, fontWeight: 'normal', fontFamily: 'Inter', textAlign: 'left' },
-    MagazineCover: { primaryColor: '#FFFFFF', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 1.0, lineHeight: 1.2, letterSpacing: 0.1, fontWeight: 'bold', fontFamily: 'Playfair Display', textAlign: 'center' },
+    News_1: { primaryColor: '#3A2D9C', textColor: '#FFFFFF', backgroundColor: '#0f172a', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Inter', textAlign: 'left' },
+    News_2: { primaryColor: '#E11D48', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.3, letterSpacing: -0.01, fontWeight: 'black', fontFamily: 'Outfit', textAlign: 'left' },
+    News_3: { primaryColor: '#10B981', textColor: '#FFFFFF', backgroundColor: '#064E3B', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.75, lineHeight: 1.5, letterSpacing: 0.02, fontWeight: 'normal', fontFamily: 'Space Grotesk', textAlign: 'left' },
+    News_4: { primaryColor: '#F59E0B', textColor: '#111827', backgroundColor: '#FFFBEB', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: -0.05, fontWeight: 'black', fontFamily: 'Bebas Neue', textAlign: 'left' },
+    News_5: { primaryColor: '#6366F1', textColor: '#FFFFFF', backgroundColor: '#1E1B4B', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Inter', textAlign: 'left' },
+    News_6: { primaryColor: '#E11D48', textColor: '#0F172A', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: -0.02, fontWeight: 'black', fontFamily: 'Inter', textAlign: 'left' },
+    Notice_1: { primaryColor: '#000000', textColor: '#111827', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.6, letterSpacing: 0, fontWeight: 'normal', fontFamily: 'Inter', textAlign: 'left' },
+    Notice_2: { primaryColor: '#2563EB', textColor: '#FFFFFF', backgroundColor: '#EFF6FF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Outfit', textAlign: 'left' },
+    Notice_3: { primaryColor: '#D97706', textColor: '#111827', backgroundColor: '#FEF3C7', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.75, lineHeight: 1.7, letterSpacing: 0.05, fontWeight: 'normal', fontFamily: 'Space Grotesk', textAlign: 'left' },
+    Notice_4: { primaryColor: '#4F46E5', textColor: '#FFFFFF', backgroundColor: '#EEF2FF', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.5, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Playfair Display', textAlign: 'left' },
+    Notice_5: { primaryColor: '#7C3AED', textColor: '#FFFFFF', backgroundColor: '#F5F3FF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.3, letterSpacing: -0.02, fontWeight: 'black', fontFamily: 'Outfit', textAlign: 'left' },
+    Quote_1: { primaryColor: '#E11D48', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.3, letterSpacing: -0.02, fontWeight: 'black', fontFamily: 'Inter', textAlign: 'left' },
+    Quote_2: { primaryColor: '#F472B6', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: -0.04, fontWeight: 'black', fontFamily: 'Playfair Display', textAlign: 'left' },
+    Quote_3: { primaryColor: '#8B5CF6', textColor: '#FFFFFF', backgroundColor: '#1E1B4B', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 0.7, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Space Grotesk', textAlign: 'left' },
+    Quote_4: { primaryColor: '#10B981', textColor: '#FFFFFF', backgroundColor: '#064E3B', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.5, letterSpacing: 0.02, fontWeight: 'normal', fontFamily: 'Outfit', textAlign: 'left' },
+    Quote_5: { primaryColor: '#F97316', textColor: '#FFFFFF', backgroundColor: '#262626', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.1, letterSpacing: -0.06, fontWeight: 'black', fontFamily: 'Bebas Neue', textAlign: 'left' },
+    SportsScore: { primaryColor: '#FCD116', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.1, letterSpacing: -0.05, fontWeight: 'black', fontFamily: 'Bebas Neue', textAlign: 'left' },
+    TwitterStyle: { primaryColor: '#1DA1F2', textColor: '#000000', backgroundColor: '#FFFFFF', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.5, letterSpacing: 0, fontWeight: 'normal', fontFamily: 'Inter', textAlign: 'left' },
+    InstagramPost: { primaryColor: '#E1306C', textColor: '#000000', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Inter', textAlign: 'left' },
+    FacebookPost: { primaryColor: '#1877F2', textColor: '#000000', backgroundColor: '#e11d48', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.5, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Inter', textAlign: 'left' },
+    YouTubeThumbnail: { primaryColor: '#FF0000', textColor: '#FFFFFF', backgroundColor: '#F3F4F6', aspectRatio: '16:9', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Impact', textAlign: 'left' },
+    MagazineCover: { primaryColor: '#FFFFFF', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: 0.1, fontWeight: 'bold', fontFamily: 'Playfair Display', textAlign: 'left' },
     PublicNotice: {} as any, ViralQuote: {} as any, BreakingNews: {} as any
 }
 
-const DEFAULT_CONTENT: Record<TemplateId, { headline: string, body: string, footer: string, email: string, brandingLine1: string, brandingLine2: string }> = {
+export const DEFAULT_CONTENT: Record<TemplateId, { headline: string, body: string, footer: string, email: string, brandingLine1: string, brandingLine2: string }> = {
     News_1: { headline: 'PRESIDENT BERRY 2028', body: 'The future is not only Bright, but absolutely Berry-tastic!', footer: 'President Berry Brightson', email: 'president@berry2028.gov', brandingLine1: 'BERRY 2028', brandingLine2: 'CAMPAIGN HQ' },
     News_2: { headline: 'BREAKING NEWS', body: 'Unprecedented developments in the tech sector today.', footer: 'Report by MMG', email: 'news@mmg.com', brandingLine1: 'LIVE UPDATE', brandingLine2: 'MMG NETWORK' },
     News_3: { headline: 'ENVIRONMENTAL UPDATE', body: 'New green initiatives launched across the federation.', footer: 'Eco Watch', email: 'green@nature.org', brandingLine1: 'EARTH FIRST', brandingLine2: 'ECO STUDIO' },
@@ -174,8 +188,18 @@ const DEFAULT_CONTENT: Record<TemplateId, { headline: string, body: string, foot
     Quote_5: { headline: '', body: 'Design is not just what it looks like and feels like. Design is how it works.', footer: 'Steve Jobs', email: '', brandingLine1: 'DESIGN', brandingLine2: 'WORKS' },
     SportsScore: { headline: 'FINAL SCORE', body: 'EAGLES 24 - 21 LIONS', footer: 'Season Opener', email: 'stats@league.com', brandingLine1: 'GAME OVER', brandingLine2: 'STADIUM LIVE' },
     TwitterStyle: { headline: 'Postit App', body: 'Building the world\'s most intuitive design tool for non-designers.', footer: '10:45 AM • Feb 5, 2026', email: '@postitapp', brandingLine1: 'SOCIAL', brandingLine2: 'MMG NETWORK' },
+    InstagramPost: { headline: 'postit_app', body: 'Capturing moments, creating memories. 📸✨ #design #creative', footer: 'San Francisco, CA', email: 'Liked by ishowspeed, mr.beast and 8.7K others', brandingLine1: 'INSTA', brandingLine2: 'GRAM' },
+    FacebookPost: { headline: 'Postit App', body: 'We are excited to announce our new features coming this summer! Stay tuned for more updates.', footer: 'Just now · Global', email: 'Bbl Drizzy and 2.4K others', brandingLine1: '387', brandingLine2: '1.2K' },
+    YouTubeThumbnail: { headline: 'CREATOR ECONOMY', body: 'The untold truth about building a digital empire in 2026.', footer: 'Special Report', email: 'watch now', brandingLine1: 'DEEP DIVE', brandingLine2: 'ANALYSIS' },
     MagazineCover: { headline: 'CREATIVITY', body: 'How to master the art of visual storytelling in 2026.', footer: 'Special Edition', email: 'magazine@vog.com', brandingLine1: 'ISSUE 42', brandingLine2: 'STYLISH' },
     BreakingNews: {} as any, PublicNotice: {} as any, ViralQuote: {} as any
+}
+
+// Default profile images for social media templates
+const defaultProfileImages: Partial<Record<TemplateId, string>> = {
+    FacebookPost: FACEBOOK_LOGO,
+    InstagramPost: INSTAGRAM_LOGO,
+    TwitterStyle: TWITTER_X_LOGO,
 }
 
 // Consolidated source of truth for legacy aliases
@@ -194,9 +218,9 @@ const initialState = {
     footer: 'PRESIDENT BERRY BRIGHTSON',
     email: 'president@berry2028.gov',
     ...defaultStyles.News_6,
-    mainImage: '/images/landing/backdrop.jpeg',
-    logo: '/images/landing/logo-stroke.png',
-    profileImage: '/images/landing/round.jpeg',
+    mainImage: '', // Default to empty for explicit placeholders
+    logo: '',
+    profileImage: '',
     brandingLine1: 'BERRY 2028',
     brandingLine2: 'CAMPAIGN HQ',
     showWatermark: true,
@@ -207,13 +231,14 @@ const initialState = {
     recentTexts: [...defaultPalette],
     recentAccents: [...defaultPalette],
     overlays: [] as OverlayItem[],
-    userTier: 'free' as 'free' | 'pro',
+    userTier: 'pro' as 'free' | 'pro',
     isAuthenticated: false,
     user: null as { name: string, avatar: string } | null,
     isProPanelOpen: false,
-    autoFontSize: true,
+    autoFontSize: false,
     showReadabilityGradient: false,
     extractedColors: [],
+    hasOnboarded: false,
 }
 
 import { persist } from 'zustand/middleware'
@@ -235,9 +260,11 @@ export const useStore = create<PostitState>()(
                 setTemplateId: (templateId) => {
                     const { templateStyles } = get()
                     const style = templateStyles[templateId]
+                    const defaultProfileImage = defaultProfileImages[templateId] || ''
                     set({
                         templateId,
-                        ...style
+                        ...style,
+                        profileImage: defaultProfileImage
                     })
                 },
                 setHeadline: (headline) => set({ headline }),
@@ -333,7 +360,9 @@ export const useStore = create<PostitState>()(
                 setShowReadabilityGradient: (show) => set({ showReadabilityGradient: show }),
                 setExtractedColors: (colors) => {
                     // Ensure unique colors
-                    const unique = Array.from(new Set(colors.map(c => c.toUpperCase())))
+                    const unique = colors
+                        .map(c => c.toUpperCase())
+                        .filter((value, index, self) => self.indexOf(value) === index)
                     set({ extractedColors: unique })
                 },
                 applyVibe: (vibe) => set((state) => {
@@ -397,6 +426,8 @@ export const useStore = create<PostitState>()(
                         }
                     }
                 }),
+                setVibe: (vibe) => get().applyVibe(vibe),
+                setHasOnboarded: (val) => set({ hasOnboarded: val }),
 
                 // Overlay Actions
                 addOverlay: (item) => {
@@ -477,6 +508,28 @@ export const useStore = create<PostitState>()(
                         }
                     })
                 },
+                setTemplateAndReset: (templateId) => {
+                    const { templateStyles } = get()
+                    // Get defaults for the NEW templateId
+                    const defaultStyle = defaultStyles[templateId] || defaultStyles[templateId] // Fallback handled by type safety usually, but safe access
+                    const defaultContent = DEFAULT_CONTENT[templateId] || DEFAULT_CONTENT.News_1
+
+                    set({
+                        templateId,
+                        ...defaultStyle, // Apply styles immediately
+                        ...defaultContent, // Apply content Defaults immediately (fixes "AMA GHANA" issue)
+                        overlays: [],
+                        mainImage: '',
+                        profileImage: '',
+                        logo: '',
+                        // Reset the style object for this template in the registry too
+                        templateStyles: {
+                            ...templateStyles,
+                            [templateId]: { ...defaultStyle }
+                        }
+                    })
+                },
+
                 resetCurrentTemplate: () => {
                     const { templateId, templateStyles } = get()
                     const defaultStyle = defaultStyles[templateId]
@@ -486,6 +539,9 @@ export const useStore = create<PostitState>()(
                         ...defaultStyle,
                         ...defaultContent,
                         overlays: [],
+                        mainImage: '', // Clear images on reset
+                        profileImage: '',
+                        logo: '',
                         templateStyles: {
                             ...templateStyles,
                             [templateId]: { ...defaultStyle }
@@ -500,6 +556,10 @@ export const useStore = create<PostitState>()(
             }),
             {
                 name: 'postit-storage',
+                partialize: (state) => {
+                    const { mainImage, ...rest } = state
+                    return rest
+                },
                 onRehydrateStorage: () => {
                     return (state, error) => {
                         if (error) {
@@ -517,6 +577,7 @@ export const useStore = create<PostitState>()(
                     recentBackgrounds,
                     recentTexts,
                     recentAccents,
+                    hasOnboarded, // Exclude from persistence
                     ...rest
                 } = state
                 return rest

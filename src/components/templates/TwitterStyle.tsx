@@ -6,99 +6,141 @@ import { cn } from '@/lib/utils'
 import { CheckCircle2, Heart, MessageCircle, Share2, Repeat2 } from 'lucide-react'
 import { TemplateLogo } from './shared/TemplateLogo'
 import { TemplateBackdrop } from './shared/TemplateBackdrop'
+import { ImagePlaceholder } from './shared/ImagePlaceholder'
+
+// Default X/Twitter logo
+const TWITTER_X_LOGO = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHJ4PSI4IiBmaWxsPSIjMDAwMDAwIi8+PHBhdGggZD0iTTI3LjUgMjRMMzUuNSAxNEgzMy41TDI2LjUgMjIuNUwyMSAxNEgxMi41TDIxIDI1TDEyLjUgMzVIMTQuNUwyMS41IDI2LjVMMjcgMzVIMzUuNUwyNy41IDI0WiIgZmlsbD0id2hpdGUiLz48L3N2Zz4='
 
 export const TwitterStyle = () => {
-    const { headline, body, footer, primaryColor, textColor, backgroundColor, mainImage, backdropPosition, logo, aspectRatio, brandingLine1, brandingLine2, fontFamily, textAlign, autoFontSize, userTier, templateId, templateStyles } = useStore()
-    const bodySize = templateStyles[templateId]?.bodySize || 1
+    const {
+        headline,
+        body,
+        footer,
+        primaryColor,
+        textColor,
+        backgroundColor,
+        mainImage,
+        backdropPosition,
+        logo,
+        aspectRatio,
+        brandingLine1,
+        brandingLine2,
+        fontFamily,
+        textAlign,
+        autoFontSize,
+        userTier,
+        templateId,
+        templateStyles,
+        profileImage
+    } = useStore()
 
+    const bodySize = templateStyles[templateId]?.bodySize || 1
     const brandName = footer.includes('.') ? footer.split('.')[0] : footer
-    const handle = footer.toLowerCase().replace(/\s+/g, '')
+    // Clean handle logic: remove spaces, ensure @ prefix, lowercase
+    const handleRaw = footer.toLowerCase().replace(/\s+/g, '')
+    const handle = handleRaw.startsWith('@') ? handleRaw : `@${handleRaw}`
+
+    // Check if dark mode (background is dark)
+    const isDark = backgroundColor === '#000000' || backgroundColor === '#15202b'
+    const xBgColor = isDark ? '#000000' : '#FFFFFF'
+    const xTextColor = isDark ? '#E7E9EA' : '#0F1419'
+    const xSubTextColor = isDark ? '#71767B' : '#536471'
 
     return (
         <div
-            id="capture-area"
             className={cn(
-                "relative overflow-hidden shadow-2xl transition-all duration-500 flex items-center justify-center p-8 lg:p-12 h-full",
-                aspectRatio === '1:1' ? "aspect-square w-full" :
-                    aspectRatio === '9:16' ? "aspect-[9/16] w-full max-h-[85vh]" : "aspect-[4/5] w-full"
+                "w-full h-full relative overflow-hidden flex flex-col p-4 pb-6",
+                isDark ? "bg-black" : "bg-white"
             )}
-            style={{ backgroundColor: backgroundColor || 'transparent' }}
+            style={{ backgroundColor: xBgColor }}
         >
-            <TemplateBackdrop overlayClassName="bg-black/40 backdrop-blur-sm" />
-            <TemplateLogo containerClassName="!top-6 !left-6" />
-            <div
-                className="w-full bg-white rounded-2xl p-6 shadow-xl border border-gray-100 flex flex-col gap-4 max-w-lg"
-                style={{ fontFamily: `'${fontFamily}', sans-serif` }}
-            >
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 border border-black/5">
-                            <img src={logo || "/logo/Asset 3.svg"} className="w-full h-full object-contain" alt="P" />
-                        </div>
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-1">
-                                <span className="font-bold text-gray-900 leading-tight">{brandName}</span>
-                                <CheckCircle2 size={14} className="text-primary fill-primary text-white" />
-                            </div>
-                            <span className="text-gray-500 text-sm leading-tight">@{handle}</span>
-                        </div>
+            {/* Header: Avatar, Name, Handle, Logo */}
+            <div className="flex justify-between items-start mb-4 relative z-10">
+                <div className="flex gap-3">
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
+                        <img src={profileImage || TWITTER_X_LOGO} className="w-full h-full object-cover" alt="Profile" />
                     </div>
-                    <img src="/logo/Asset 3.svg" className="h-4 w-auto opacity-20" alt="Logo" />
-                </div>
-
-                {/* Body */}
-                <div className="bg-white p-4 transform -skew-x-6 border-l-8 border-[var(--primary)]" style={{ '--primary': primaryColor } as any}>
-                    <p
-                        className="text-black font-black uppercase leading-tight transform skew-x-6 whitespace-pre-wrap"
-                        style={{
-                            textAlign,
-                            fontSize: (autoFontSize && userTier === 'pro')
-                                ? `${(body.length < 30 ? 2 : body.length < 60 ? 1.5 : 1.2) * bodySize}rem`
-                                : `calc(1.5rem * ${bodySize})`
-                        }}
-                    >
-                        {body}
-                    </p>
-                </div>
-
-                {/* Main Content Image (Backdrop inside the "tweet") */}
-                {mainImage && (
-                    <div className="rounded-2xl overflow-hidden aspect-video border border-gray-100">
-                        <img src={mainImage} className={cn("w-full h-full object-cover", backdropPosition)} alt="Tweet media" />
+                    <div className="flex flex-col leading-tight justify-center">
+                        <div className="flex items-center gap-1">
+                            <span className="font-bold text-[15px]" style={{ color: xTextColor }}>{headline || 'Post Author'}</span>
+                            <CheckCircle2 size={16} className="text-[#1D9BF0] fill-[#1D9BF0] text-white" />
+                        </div>
+                        <span className="text-[15px]" style={{ color: xSubTextColor }}>{handle}</span>
                     </div>
+                </div>
+                <div className="opacity-80">
+                    {/* X Logo - switch based on theme */}
+                    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" style={{ fill: xTextColor }}><g><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></g></svg>
+                </div>
+            </div>
+
+            {/* Post Content */}
+            <div className="mb-3 relative z-10 flex-shrink-0">
+                <p
+                    className="whitespace-pre-wrap leading-normal"
+                    style={{
+                        color: xTextColor,
+                        fontFamily,
+                        fontSize: `calc(1.2rem * ${bodySize})`,
+                        fontWeight: '400',
+                        textAlign: textAlign as any
+                    }}
+                >
+                    {body}
+                </p>
+            </div>
+
+            {/* Media Area (Main Image) */}
+            {/* Media Area (Main Image) - Always render area to show placeholder if no image */}
+            <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 relative z-10 w-full mb-3 flex-shrink-0 min-h-[200px] max-h-[50%] bg-gray-50/50">
+                {mainImage ? (
+                    <img src={mainImage} className={cn("w-full h-full object-cover max-h-[350px]", backdropPosition)} alt="Post media" />
+                ) : (
+                    <ImagePlaceholder />
                 )}
+            </div>
 
-                {/* Stats / Time */}
-                <div className="flex items-center gap-2 py-1 border-b border-gray-50 pb-3">
-                    <span className="text-gray-500 text-sm">9:41 AM · Feb 2, 2026</span>
-                    <span className="text-gray-300">·</span>
-                    <span className="text-gray-900 font-bold text-sm">4.2M</span>
-                    <span className="text-gray-500 text-sm">Views</span>
+            {/* Date / Time */}
+            <div className="flex items-center gap-1.5 text-[15px] mb-4 border-b border-gray-100 dark:border-gray-800 pb-4 relative z-10" style={{ color: xSubTextColor }}>
+                <span className="hover:underline cursor-pointer">9:41 AM · Feb 2, 2026</span>
+                <span>·</span>
+                <span className="font-bold hover:underline cursor-pointer" style={{ color: xTextColor }}>4.2M</span>
+                <span>Views</span>
+            </div>
+
+            {/* Interaction Metrics Stats (Optional middle bar) would go here */}
+
+            {/* Interaction Icons */}
+            <div className="flex justify-between items-center px-2 relative z-10 w-full mt-auto">
+                <div className="flex items-center gap-2 group cursor-pointer" style={{ color: xSubTextColor }}>
+                    <div className="p-2 rounded-full group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors">
+                        <MessageCircle size={20} />
+                    </div>
+                    <span className="text-sm group-hover:text-blue-500 transition-colors">1.2k</span>
                 </div>
-
-                {/* Actions */}
-                <div className="flex items-center justify-between text-gray-500 px-1 pt-1">
-                    <div className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer">
-                        <MessageCircle size={18} />
-                        <span className="text-xs">1.2k</span>
+                <div className="flex items-center gap-2 group cursor-pointer" style={{ color: xSubTextColor }}>
+                    <div className="p-2 rounded-full group-hover:bg-green-50 group-hover:text-green-500 transition-colors">
+                        <Repeat2 size={20} />
                     </div>
-                    <div className="flex items-center gap-2 hover:text-green-500 transition-colors cursor-pointer">
-                        <Repeat2 size={18} />
-                        <span className="text-xs">4.8k</span>
+                    <span className="text-sm group-hover:text-green-500 transition-colors">4.8k</span>
+                </div>
+                <div className="flex items-center gap-2 group cursor-pointer" style={{ color: xSubTextColor }}>
+                    <div className="p-2 rounded-full group-hover:bg-pink-50 group-hover:text-pink-500 transition-colors">
+                        <Heart size={20} />
                     </div>
-                    <div className="flex items-center gap-2 hover:text-red-500 transition-colors cursor-pointer">
-                        <Heart size={18} />
-                        <span className="text-xs">24k</span>
-                    </div>
-                    <div className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer">
-                        <Share2 size={18} />
+                    <span className="text-sm group-hover:text-pink-500 transition-colors">24k</span>
+                </div>
+                <div className="flex items-center gap-2 group cursor-pointer" style={{ color: xSubTextColor }}>
+                    <div className="p-2 rounded-full group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors">
+                        <Share2 size={20} />
                     </div>
                 </div>
             </div>
 
-            {/* Background Watermark */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 opacity-10 blur-3xl pointer-events-none w-full h-full bg-[var(--primary)]" style={{ '--primary': primaryColor } as any} />
+            {/* Optional: Add a subtle texture or noise if requested, but clean is better for X */}
+            <div className="absolute top-4 right-4 z-0 opacity-0 pointer-events-none">
+                <TemplateLogo mode="draggable" />
+            </div>
         </div>
     )
 }

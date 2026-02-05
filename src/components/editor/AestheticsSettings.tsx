@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useStore } from '@/lib/store'
-import { Palette, Layers, Pipette, Hash, Sparkles, ShieldCheck, ShieldAlert, Eye, EyeOff } from 'lucide-react'
+import { Palette, Layers, Pipette, Hash, Sparkles, ShieldCheck, ShieldAlert, Eye, EyeOff, Type } from 'lucide-react'
 import { cn, isMediaTemplate } from '@/lib/utils'
 import { LockOverlay } from '@/components/common/LockOverlay'
 
@@ -155,6 +155,32 @@ export const AestheticsSettings = () => {
 
     return (
         <div className="flex flex-col gap-4">
+            <ColorControl
+                label="Accent"
+                value={primaryColor}
+                onChange={setPrimaryColor}
+                icon={Palette}
+                recentColors={recentAccents}
+                smartColors={extractedColors}
+                userTier={userTier}
+            />
+            <ColorControl
+                label="Text"
+                value={textColor}
+                onChange={setTextColor}
+                icon={Type} // Importing Type from lucide-react (wait, need to check imports)
+                recentColors={recentTexts}
+                userTier={userTier}
+            />
+            <ColorControl
+                label="Background"
+                value={backgroundColor}
+                onChange={setBackgroundColor}
+                icon={Layers}
+                recentColors={recentBackgrounds}
+                userTier={userTier}
+            />
+
             {/* Watermark Container */}
             {isMediaTemplate(templateId) && (
                 <LockOverlay isLocked={userTier === 'free'} message="Upgrade to Pro to remove branding">

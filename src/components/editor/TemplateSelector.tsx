@@ -28,7 +28,7 @@ const variations: Record<Category, { id: TemplateId; name: string; isPremium?: b
         { id: 'PublicNotice', name: 'Official' },
         { id: 'Notice_2', name: 'Compact', isPremium: true },
         { id: 'Notice_3', name: 'Warning', isPremium: true },
-        { id: 'Notice_4', name: 'Editorial', isPremium: true },
+        { id: 'Notice_4', name: 'Event Invite', isPremium: true },
         { id: 'Notice_5', name: 'Minimal', isPremium: true },
     ],
     Quote: [
@@ -39,14 +39,19 @@ const variations: Record<Category, { id: TemplateId; name: string; isPremium?: b
         { id: 'Quote_5', name: 'Bold', isPremium: true },
     ],
     Special: [
-        { id: 'SportsScore', name: 'Sports', isPremium: true },
         { id: 'TwitterStyle', name: 'X-Style', isPremium: true },
-        { id: 'MagazineCover', name: 'Cover', isPremium: true },
+        { id: 'InstagramPost', name: 'Insta', isPremium: true },
+        { id: 'FacebookPost', name: 'Facebook', isPremium: true },
+        { id: 'YouTubeThumbnail', name: 'YouTube', isPremium: true },
     ]
 }
 
 export const TemplateSelector = () => {
-    const { templateId, setTemplateId, userTier } = useStore()
+    const {
+        templateId,
+        setTemplateAndReset,
+        userTier
+    } = useStore()
     const [activeCategory, setActiveCategory] = React.useState<Category>('News')
     const [isExpanded, setIsExpanded] = React.useState(false)
 
@@ -127,7 +132,7 @@ export const TemplateSelector = () => {
                                 // Auto-select the first variation of the selected category
                                 const firstVariation = variations[cat.id][0]
                                 if (firstVariation) {
-                                    setTemplateId(firstVariation.id)
+                                    setTemplateAndReset(firstVariation.id)
                                 }
                             }}
                             className={cn(
@@ -204,7 +209,8 @@ export const TemplateSelector = () => {
                                     >
                                         <button
                                             onClick={() => {
-                                                setTemplateId(v.id)
+                                                // Atomic switch & reset ensures no content carry-over
+                                                setTemplateAndReset(v.id)
                                             }}
                                             disabled={isLocked}
                                             className={cn(

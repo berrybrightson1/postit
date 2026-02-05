@@ -19,7 +19,8 @@ export const MagazineCover = () => {
             className={cn(
                 "relative overflow-hidden shadow-2xl transition-all duration-500 bg-black flex items-center justify-center",
                 aspectRatio === '1:1' ? "aspect-square w-full" :
-                    aspectRatio === '9:16' ? "aspect-[9/16] w-full max-h-[85vh]" : "aspect-[4/5] w-full"
+                    aspectRatio === '16:9' ? "aspect-video w-full" :
+                        aspectRatio === '9:16' ? "aspect-[9/16] w-full max-h-[85vh]" : "aspect-[4/5] w-full"
             )}
             style={{ fontFamily: `'${fontFamily}', sans-serif` }}
         >
