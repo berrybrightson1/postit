@@ -194,7 +194,7 @@ const initialState = {
     footer: 'PRESIDENT BERRY BRIGHTSON',
     email: 'president@berry2028.gov',
     ...defaultStyles.News_6,
-    mainImage: null,
+    mainImage: '/images/landing/backdrop.jpeg',
     logo: '/images/landing/logo-stroke.png',
     profileImage: '/images/landing/round.jpeg',
     brandingLine1: 'BERRY 2028',
