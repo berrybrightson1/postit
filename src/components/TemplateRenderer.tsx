@@ -32,6 +32,7 @@ export const TemplateRenderer = () => {
         case 'News_3':
         case 'News_4':
         case 'News_5':
+        case 'News_6':
         case 'BreakingNews':
             return <BreakingNews />
         case 'Notice_1':

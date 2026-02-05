@@ -126,7 +126,7 @@ export const TextInputs = () => {
             )}
 
             {current.showBranding && (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="flex flex-col gap-1.5">
                         <div className="flex items-center gap-2 px-1">
                             <Info size={12} className="text-gray-400" />

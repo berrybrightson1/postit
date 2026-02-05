@@ -4,8 +4,11 @@ import React, { useMemo } from 'react'
 import { useStore } from '@/lib/store'
 import { fontWeightMap, cn } from '@/lib/utils'
 
+import { TemplateLogo } from './shared/TemplateLogo'
+import { TemplateBackdrop } from './shared/TemplateBackdrop'
+
 export const BreakingNews = () => {
-    const { headline, body, footer, logo, primaryColor, textColor, backgroundColor, mainImage, backdropPosition, showWatermark, aspectRatio, brandingLine1, brandingLine2, templateId, templateStyles, fontFamily, textAlign, autoFontSize, userTier, showReadabilityGradient } = useStore()
+    const { headline, body, footer, profileImage, primaryColor, textColor, backgroundColor, showWatermark, aspectRatio, brandingLine1, brandingLine2, templateId, templateStyles, fontFamily, textAlign, autoFontSize, userTier } = useStore()
 
     const style = templateStyles[templateId] || {}
     const bodySize = style.bodySize || 1
@@ -33,21 +36,16 @@ export const BreakingNews = () => {
         const accentColor = primaryColor || '#E11D48'
         return (
             <div className="w-full h-full flex flex-col relative overflow-hidden font-sans group" style={{ backgroundColor: backgroundColor || '#000', ...sharedStyle }}>
-                {mainImage && (
-                    <div className="absolute inset-0">
-                        <img src={mainImage} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${backdropPosition}`} alt="" />
-                        <div className={cn("absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent transition-opacity duration-300", showReadabilityGradient ? "opacity-100" : "opacity-80")} />
-                        {showReadabilityGradient && <div className="absolute inset-0 bg-black/40 pointer-events-none transition-opacity duration-300" />}
-                    </div>
-                )}
+                <TemplateBackdrop overlayClassName="bg-gradient-to-t from-black via-black/20 to-transparent" />
 
                 {/* Modern Broadcast UI */}
                 <div className="absolute top-8 left-8 z-20 flex items-center gap-3">
                     <div className="bg-red-600 px-3 py-1 rounded text-[10px] font-black tracking-widest text-white shadow-xl flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" /> {brandingLine1 || 'LIVE'}
                     </div>
-                    {logo && <img src={logo} className="h-8 w-auto object-contain brightness-0 invert" alt="" />}
                 </div>
+
+                <TemplateLogo containerClassName="!left-[32px] !top-[70px]" className="h-8" />
 
                 <div className="mt-auto relative z-10 p-6 lg:p-10 w-full mb-4 lg:mb-8">
                     <div className="flex flex-col gap-0 max-w-full">
@@ -94,8 +92,7 @@ export const BreakingNews = () => {
         return (
             <div className="w-full h-full flex flex-col relative overflow-hidden bg-black font-sans group" style={sharedStyle}>
                 <div className="flex-1 relative overflow-hidden">
-                    {mainImage && <img src={mainImage} className={`w-full h-full object-cover opacity-90 transition-transform duration-1000 group-hover:scale-110 ${backdropPosition}`} alt="" />}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+                    <TemplateBackdrop overlayClassName="bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
 
                     {/* Live Badge */}
                     <div className="absolute top-8 left-8">
@@ -149,10 +146,10 @@ export const BreakingNews = () => {
             <div className="w-full h-full flex flex-col relative overflow-hidden font-sans p-2 lg:p-4" style={{ backgroundColor: backgroundColor || '#000', ...sharedStyle }}>
                 <div className="absolute inset-0">
                     <div className="absolute top-0 right-0 w-[60%] h-full transform skew-x-[-15deg] translate-x-12 z-0" style={{ backgroundColor: accentColor }} />
-                    {mainImage && <img src={mainImage} className={`absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay ${backdropPosition}`} alt="" />}
+                    <TemplateBackdrop overlayClassName="mix-blend-overlay opacity-40" />
                 </div>
 
-                <div className="relative z-10 h-full flex flex-col p-10 lg:p-14 border-[12px] lg:border-[16px] border-white/10">
+                <div className="relative z-10 h-full flex flex-col p-10 lg:p-14 pb-8 lg:pb-12 border-[12px] lg:border-[16px] border-white/10">
                     <div className="flex-1 flex flex-col justify-center gap-6 max-h-[70%] overflow-hidden text-4xl lg:text-7xl">
                         <div className="flex flex-col text-base">
                             <h1 className="text-xs lg:text-sm font-black tracking-[0.5em] text-white uppercase mb-2 bg-black self-start px-4 py-1">{headline || 'IMPACT'}</h1>
@@ -172,10 +169,10 @@ export const BreakingNews = () => {
                         </p>
                     </div>
 
-                    <div className="mt-auto flex justify-between items-end pt-12 border-t border-white/20">
+                    <div className="mt-auto flex justify-between items-end pt-6 border-t border-white/20 pb-1">
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1 italic">{brandingLine1 || 'Authorized Source'}</span>
-                            <span className="text-2xl font-black uppercase tracking-tight text-white">{footer || 'President Berry'}</span>
+                            <span className="text-[8px] font-bold text-white/50 uppercase tracking-widest mb-0.5 italic">{brandingLine1 || 'Authorized Source'}</span>
+                            <span className="text-lg lg:text-xl font-black uppercase tracking-tight text-white">{footer || 'President Berry'}</span>
                         </div>
                         <div className="text-right flex flex-col items-end">
                             <div className="flex gap-1 mb-2">
@@ -197,12 +194,7 @@ export const BreakingNews = () => {
             <div className="w-full h-full grid grid-cols-12 grid-rows-12 gap-0 relative overflow-hidden bg-black font-sans" style={sharedStyle}>
                 {/* Main Image Plate (Takes most space) */}
                 <div className="col-span-8 row-span-12 relative overflow-hidden border-r border-white/10 group">
-                    {mainImage ? (
-                        <img src={mainImage} className={`w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 ${backdropPosition}`} alt="" />
-                    ) : (
-                        <div className="w-full h-full animate-pulse" style={{ backgroundColor: '#111' }} />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+                    <TemplateBackdrop overlayClassName="bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
 
                     {/* Floating Accent */}
                     <div className="absolute top-10 left-10 flex flex-col gap-2">
@@ -237,7 +229,7 @@ export const BreakingNews = () => {
                             {body || 'The future is Bright, and it is absolutely Berry-tastic!'}
                         </p>
                         <div className="w-12 h-1 mt-8 mb-4" style={{ backgroundColor: accentColor }} />
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest italic">{footer || 'PRESIDENT BERRY'}</span>
+                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest italic">{footer || 'PRESIDENT BERRY'}</span>
                     </div>
 
                     {/* Footer Stats/Meta Plate */}
@@ -261,25 +253,86 @@ export const BreakingNews = () => {
         )
     }
 
-    // Default News_1 (Classic)
+    if (variant === 'News_6') {
+        const accentColor = primaryColor || '#E11D48'
+        return (
+            <div className="w-full h-full flex flex-col relative overflow-hidden bg-white font-sans group" style={{ ...sharedStyle, color: '#0F172A' }}>
+                {/* Top Image Section */}
+                <div className="relative h-[40%] lg:h-[45%] overflow-hidden shrink-0 z-0">
+                    <TemplateBackdrop overlayClassName="bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                    <TemplateLogo containerClassName="!left-[40px] !top-[40px]" className="h-8 md:h-12" />
+                </div>
+
+                {/* Banner Section - The Red Slanted Strip */}
+                <div className="relative z-20 -mt-6 lg:-mt-10 h-14 lg:h-18 flex">
+                    <div className="bg-red-600 flex items-center pl-8 md:pl-12 pr-16 md:pr-24 relative overflow-hidden transition-all duration-500 hover:pr-32 group-banner" style={{ backgroundColor: accentColor }}>
+                        {/* Slanted Edge */}
+                        <div className="absolute top-0 right-[-20px] lg:right-[-30px] h-full w-[40px] lg:w-[60px] bg-inherit transform skew-x-[30deg]" />
+
+                        <h2 className="text-xl lg:text-3xl font-black text-white uppercase tracking-tight italic drop-shadow-md">
+                            {headline || 'DATE OR BREAKING NEW'}
+                        </h2>
+                    </div>
+                </div>
+
+                {/* Inset Circular Image (Player Photo) - Floating on the image up top RIGHT */}
+                <div className="absolute top-6 md:top-8 right-6 md:right-8 z-30">
+                    <div className="w-20 h-20 md:w-32 md:h-32 rounded-full border-[4px] md:border-[6px] border-white shadow-2xl overflow-hidden bg-gray-200">
+                        {profileImage ? (
+                            <img src={profileImage} className="w-full h-full object-cover" alt="" />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[10px] font-black text-gray-400">PLAYER</div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Content Area - White background */}
+                <div className="flex-1 bg-white p-8 lg:p-14 pb-6 lg:pb-8 relative z-10 flex flex-col">
+                    <p
+                        className="text-2xl lg:text-5xl font-black leading-[1.15] tracking-tight transition-all duration-300"
+                        style={{
+                            textAlign,
+                            fontSize: (autoFontSize && userTier === 'pro') ? undefined : `calc(1em * ${bodySize})`,
+                            fontWeight,
+                            color: textColor || '#0F172A'
+                        }}
+                    >
+                        {body || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'}
+                    </p>
+
+                    {/* Tiny decorative elements */}
+                    <div className="mt-auto flex justify-between items-end border-t border-gray-100 pt-4 pb-0">
+                        <div className="flex flex-col">
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-300 italic mb-0.5">{footer || 'PRESS CORPS'}</span>
+                            <div className="flex gap-1">
+                                {[1, 2, 3].map(i => <div key={i} className="w-3 h-0.5 bg-gray-100" />)}
+                            </div>
+                        </div>
+                        {brandingLine1 && (
+                            <div className="flex flex-col items-end">
+                                <span className="text-[8px] font-bold text-gray-200 uppercase tracking-widest">{brandingLine1}</span>
+                                <span className="text-[10px] font-black text-gray-400 uppercase">{brandingLine2}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="w-full h-full flex flex-col relative overflow-hidden font-sans" style={{ backgroundColor: backgroundColor || '#000', ...sharedStyle }}>
             <div className="absolute inset-0 z-0">
-                {(aspectRatio !== '1:1' && mainImage) ? (
-                    <div className="w-full h-full">
-                        <div className={(aspectRatio === '4:5' || aspectRatio === '9:16') ? 'h-1/2 w-full relative' : 'absolute inset-0'}>
-                            <img src={mainImage} className={`w-full h-full object-cover ${backdropPosition || 'object-center'}`} alt="" />
-                            {showReadabilityGradient && <div className="absolute inset-0 bg-black/40 pointer-events-none" />}
-                        </div>
-                        {(aspectRatio === '4:5' || aspectRatio === '9:16') && <div className="h-1/2 w-full" style={{ backgroundColor: backgroundColor || '#FFFFFF' }} />}
-                    </div>
-                ) : <div className="w-full h-full" style={{ backgroundColor: backgroundColor || '#FFFFFF' }} />}
+                <TemplateBackdrop
+                    className={(aspectRatio === '4:5' || aspectRatio === '9:16') ? 'h-1/2 w-full !relative' : 'absolute inset-0'}
+                    overlayClassName="bg-black/40"
+                />
             </div>
 
             <div className="relative z-10 flex flex-col h-full w-full">
                 <div className={`p-8 flex ${aspectRatio === '1:1' ? 'justify-center' : 'justify-between'} items-start w-full ${aspectRatio === '4:5' || aspectRatio === '9:16' ? 'h-1/2' : ''}`}>
-                    <div className="flex flex-col items-center gap-2">
-                        {logo ? <img src={logo} className="h-10 lg:h-14 w-auto object-contain drop-shadow-2xl" alt="" /> : <div className="text-3xl lg:text-4xl font-black italic tracking-tighter drop-shadow-2xl" style={{ color: primaryColor }}>POSTIT.</div>}
+                    <div className="flex flex-col items-center gap-2 relative">
+                        <TemplateLogo />
                     </div>
                     {aspectRatio !== '1:1' && (
                         <div className="bg-[#E11D48] text-white px-3 py-1.5 rounded-lg flex items-center gap-2 font-black text-xs lg:text-sm tracking-widest shadow-2xl">

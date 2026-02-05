@@ -56,14 +56,19 @@ export async function compressImage(base64Str: string, targetSizeKB: number = 40
             const ctx = canvas.getContext('2d')
             ctx?.drawImage(img, 0, 0, width, height)
 
+            // Detect original mime type
+            const mimeType = base64Str.match(/data:([^;]+);/)?.[1] || 'image/jpeg'
+            const isTransparent = mimeType === 'image/png' || mimeType === 'image/webp'
+            const outputType = isTransparent ? 'image/webp' : 'image/jpeg'
+
             // Start with 0.8 quality and reduce if still too large
             let quality = 0.8
-            let result = canvas.toDataURL('image/jpeg', quality)
+            let result = canvas.toDataURL(outputType, quality)
 
             // Iteratively reduce quality if needed (crude but effective)
             while (result.length > targetSizeKB * 1024 && quality > 0.1) {
                 quality -= 0.1
-                result = canvas.toDataURL('image/jpeg', quality)
+                result = canvas.toDataURL(outputType, quality)
             }
 
             resolve(result)

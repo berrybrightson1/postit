@@ -11,9 +11,9 @@ export const PreviewStage = () => {
     const previewRef = useRef<HTMLDivElement>(null!)
 
     return (
-        <div className="flex flex-col items-center gap-6 w-full p-2 relative">
+        <div className="flex flex-col items-center gap-6 w-full px-0 lg:p-2 relative">
             <div
-                className="w-full max-w-[420px] lg:max-w-[480px] mx-auto"
+                className="w-full max-w-full lg:max-w-[480px] mx-auto"
             >
                 <div
                     id="postit-export-canvas"
@@ -21,8 +21,8 @@ export const PreviewStage = () => {
                     className={cn(
                         "bg-white shadow-2xl relative overflow-hidden transition-all duration-500 ease-in-out flex flex-col items-stretch",
                         aspectRatio === '1:1' ? 'aspect-square w-full' :
-                            aspectRatio === '4:5' ? 'aspect-[4/5] w-full max-h-[70dvh] lg:max-h-[85vh]' :
-                                'aspect-[9/16] w-full max-h-[70dvh] lg:max-h-[85vh]'
+                            aspectRatio === '4:5' ? 'aspect-[4/5] w-full max-h-[75dvh] lg:max-h-[85vh]' :
+                                'aspect-[9/16] w-full max-h-[75dvh] lg:max-h-[85vh]'
                     )}
                 >
                     <TemplateRenderer />

@@ -3,9 +3,11 @@
 import React from 'react'
 import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
+import { TemplateLogo } from './shared/TemplateLogo'
+import { TemplateBackdrop } from './shared/TemplateBackdrop'
 
 export const SportsScore = () => {
-    const { headline, body, footer, primaryColor, textColor, backgroundColor, mainImage, aspectRatio, backdropPosition, logo, brandingLine1, brandingLine2, fontFamily, textAlign, autoFontSize, userTier, templateId } = useStore()
+    const { headline, body, footer, primaryColor, textColor, backgroundColor, aspectRatio, brandingLine1, brandingLine2, fontFamily, textAlign, autoFontSize, userTier, templateId } = useStore()
     const bodySize = 1
 
     return (
@@ -22,12 +24,8 @@ export const SportsScore = () => {
             }}
         >
             {/* Main Image Backdrop */}
-            {mainImage && (
-                <div className="absolute inset-0 z-0">
-                    <img src={mainImage} className={cn("w-full h-full object-cover opacity-60", backdropPosition)} alt="Backdrop" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                </div>
-            )}
+            <TemplateBackdrop overlayClassName="bg-gradient-to-t from-black via-black/40 to-transparent" className="opacity-60" />
+            <TemplateLogo containerClassName="!top-10 !left-10" />
 
             {/* Sports Overlay Elements */}
             <div className="absolute inset-0 z-10 p-8 flex flex-col justify-end">
@@ -63,11 +61,7 @@ export const SportsScore = () => {
                 {/* Footer Branding Area */}
                 <div className="mt-8 flex items-center justify-between border-t border-white/20 pt-4">
                     <div className="flex items-center gap-3">
-                        {logo ? (
-                            <img src={logo} className="h-8 w-auto object-contain" alt="Brand" />
-                        ) : (
-                            <img src="/logo/Asset 3.svg" className="h-8 w-auto invert" alt="Postit" />
-                        )}
+                        <TemplateLogo className="h-8 w-auto object-contain" />
                         <div className="flex flex-col">
                             <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/40 leading-none">{brandingLine1}</span>
                             <span className="text-[10px] font-black uppercase text-white leading-none">{brandingLine2 || footer}</span>

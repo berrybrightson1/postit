@@ -9,7 +9,7 @@ export const CanvasSettings = () => {
     const { templateId, aspectRatio, setAspectRatio } = useStore()
 
     return (
-        <div className="pill-container !p-3">
+        <div className="pill-container !p-3 lg:hidden">
             <div className="flex items-center gap-2 mb-3 px-1">
                 <Box size={12} className="text-gray-400" />
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Canvas Proportions</label>

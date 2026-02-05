@@ -3,10 +3,13 @@
 import React, { useMemo } from 'react'
 import { useStore } from '@/lib/store'
 import { Quote as QuoteIcon, Minus, User, Hash } from 'lucide-react'
-import { fontWeightMap } from '@/lib/utils'
+import { fontWeightMap, cn } from '@/lib/utils'
+
+import { TemplateLogo } from './shared/TemplateLogo'
+import { TemplateBackdrop } from './shared/TemplateBackdrop'
 
 export const ViralQuote = () => {
-    const { headline, body, footer, email, textColor, backgroundColor, primaryColor, mainImage, aspectRatio, backdropPosition, logo, brandingLine1, brandingLine2, templateId, templateStyles, fontFamily, textAlign, autoFontSize, userTier } = useStore()
+    const { headline, body, footer, email, textColor, backgroundColor, primaryColor, aspectRatio, brandingLine1, brandingLine2, templateId, templateStyles, fontFamily, textAlign, autoFontSize, userTier } = useStore()
 
     const style = templateStyles[templateId] || {}
     const bodySize = style.bodySize || 1
@@ -22,9 +25,12 @@ export const ViralQuote = () => {
         color: textColor || '#FFFFFF',
     }
 
+
     if (variant === 'Quote_2') {
         return (
-            <div className="w-full h-full flex flex-col items-center justify-center p-12 lg:p-20 relative overflow-hidden text-center" style={{ backgroundColor, ...sharedStyle }}>
+            <div className="w-full h-full flex flex-col items-center justify-center p-12 lg:p-20 relative overflow-hidden text-center" style={{ backgroundColor: backgroundColor || 'transparent', ...sharedStyle }}>
+                <TemplateBackdrop overlayClassName="bg-black/40 backdrop-blur-[2px]" />
+                <TemplateLogo containerClassName="!top-10 !left-10" />
                 <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `radial-gradient(${primaryColor} 1px, transparent 1px)`, backgroundSize: '32px 32px' }} />
                 <div className="relative z-10 flex flex-col items-center max-w-2xl">
                     <div className="w-12 h-px mb-12 opacity-30" style={{ backgroundColor: primaryColor }} />
@@ -50,7 +56,9 @@ export const ViralQuote = () => {
 
     if (variant === 'Quote_3') {
         return (
-            <div className="w-full h-full flex flex-col justify-center p-12 lg:p-20 relative overflow-hidden" style={{ backgroundColor, ...sharedStyle }}>
+            <div className="w-full h-full flex flex-col justify-center p-12 lg:p-20 relative overflow-hidden" style={{ backgroundColor: backgroundColor || 'transparent', ...sharedStyle }}>
+                <TemplateBackdrop overlayClassName="bg-black/40 backdrop-blur-[2px]" />
+                <TemplateLogo containerClassName="!top-10 !left-10" />
                 <div className="relative z-10 flex flex-col gap-12 max-w-2xl border-l-[6px] pl-10 lg:pl-16 shadow-[20px_0_40px_-20px_rgba(0,0,0,0.1)] transition-all duration-300" style={{ borderColor: primaryColor }}>
                     <p
                         className="tracking-tighter leading-[1.1] whitespace-pre-wrap"
@@ -75,6 +83,8 @@ export const ViralQuote = () => {
         const quoteColor = primaryColor || '#3B82F6'
         return (
             <div className="w-full h-full flex flex-col items-center justify-center p-12 lg:p-20 relative overflow-hidden" style={{ backgroundColor: backgroundColor || '#FFFFFF', ...sharedStyle }}>
+                <TemplateBackdrop overlayClassName="bg-black/40 backdrop-blur-[2px]" />
+                <TemplateLogo containerClassName="!top-10 !left-10" />
                 {/* Decorative background accent */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" style={{ backgroundColor: `${quoteColor}10` }} />
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" style={{ backgroundColor: `${quoteColor}10` }} />
@@ -115,7 +125,9 @@ export const ViralQuote = () => {
 
     if (variant === 'Quote_5') {
         return (
-            <div className="w-full h-full flex flex-col font-sans relative overflow-hidden" style={{ backgroundColor, ...sharedStyle }}>
+            <div className="w-full h-full flex flex-col font-sans relative overflow-hidden" style={{ backgroundColor: backgroundColor || 'transparent', ...sharedStyle }}>
+                <TemplateBackdrop overlayClassName="bg-black/40 backdrop-blur-[2px]" />
+                <TemplateLogo containerClassName="!top-10 !left-10" />
                 <div className="absolute top-0 left-0 w-full h-3 lg:h-4 shadow-lg z-20" style={{ backgroundColor: primaryColor }} />
                 <div className="flex-1 flex flex-col items-center justify-center p-12 lg:p-20 relative z-10">
                     <QuoteIcon size={40} className="mb-10 opacity-20 rotate-180" style={{ color: primaryColor }} />
@@ -148,6 +160,8 @@ export const ViralQuote = () => {
     // Default Quote_1 (Viral)
     return (
         <div className="w-full flex flex-col justify-center relative overflow-hidden font-sans p-8 lg:p-14 h-full" style={{ backgroundColor: backgroundColor || '#000000', ...sharedStyle }}>
+            <TemplateBackdrop overlayClassName="bg-black/40 backdrop-blur-[2px]" />
+            <TemplateLogo containerClassName="!top-10 !left-10" />
             <div className="relative z-10 h-full flex flex-col min-h-[inherit]">
                 <div className="flex-1 flex flex-col justify-center">
                     <div className="absolute top-[-20px] left-[-10px] opacity-10 select-none z-0" style={{ color: primaryColor }} title="Decorative Quote Icon">
@@ -168,7 +182,7 @@ export const ViralQuote = () => {
                         </div>
                         <div className="flex flex-col gap-4">
                             <div className="w-16 h-1.5 rounded-full shadow-lg" style={{ backgroundColor: primaryColor }} />
-                            <span className="font-black uppercase tracking-tighter leading-none" style={{ fontSize: `${(body.length < 60 ? 2.5 : 1.8) * bodySize}rem` }}>{footer || 'QUOTE OWNER'}</span>
+                            <span className="font-black uppercase tracking-tighter leading-none" style={{ fontSize: `${(body.length < 60 ? 2.5 : 1.8)}rem` }}>{footer || 'QUOTE OWNER'}</span>
                         </div>
                     </div>
                 </div>

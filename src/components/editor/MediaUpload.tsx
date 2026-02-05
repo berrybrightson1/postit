@@ -9,14 +9,15 @@ import { toast } from 'sonner'
 import { LockOverlay } from '../common/LockOverlay'
 
 export const MediaUpload = () => {
-    const { templateId, mainImage, setMainImage, logo, setLogo, userTier, setExtractedColors } = useStore()
+    const { templateId, mainImage, setMainImage, logo, setLogo, profileImage, setProfileImage, userTier, setExtractedColors } = useStore()
     const imageInputRef = useRef<HTMLInputElement>(null)
     const logoInputRef = useRef<HTMLInputElement>(null)
+    const profileInputRef = useRef<HTMLInputElement>(null)
 
     if (!isMediaTemplate(templateId)) return null
 
 
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'logo') => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'logo' | 'profile') => {
         const file = e.target.files?.[0]
         if (!file) return
 
@@ -38,7 +39,8 @@ export const MediaUpload = () => {
                     // Fail silently
                 }
             }
-            else setLogo(compressed)
+            else if (type === 'logo') setLogo(compressed)
+            else setProfileImage(compressed)
         }
         reader.readAsDataURL(file)
     }
@@ -132,6 +134,48 @@ export const MediaUpload = () => {
                     </div>
                 </LockOverlay>
             </div>
+
+            {/* Gaming Profile Upload Slot - ONLY for Gaming Template */}
+            {templateId === 'News_6' && (
+                <div className="bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-gray-100/50 mt-1">
+                    <div className="flex items-center gap-4">
+                        <div
+                            onClick={() => profileInputRef.current?.click()}
+                            className={cn(
+                                "w-14 h-14 rounded-full flex items-center justify-center cursor-pointer overflow-hidden transition-all shrink-0 border-4 border-white shadow-lg",
+                                profileImage ? "bg-primary/5" : "bg-gray-100 hover:bg-gray-200"
+                            )}
+                        >
+                            {profileImage ? (
+                                <img src={profileImage} className="w-full h-full object-cover" alt="Profile" />
+                            ) : (
+                                <Upload size={16} className="text-gray-400" />
+                            )}
+                        </div>
+                        <div className="flex flex-col flex-1">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/40 leading-none mb-1">Player Photo</span>
+                            <span className="text-[9px] font-bold text-gray-400 uppercase leading-none mb-3">Circular Inset image</span>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => profileInputRef.current?.click()}
+                                    className="text-[11px] font-black text-primary hover:underline uppercase tracking-wider"
+                                >
+                                    {profileImage ? 'Replace' : 'Upload Photo'}
+                                </button>
+                                {profileImage && (
+                                    <button
+                                        onClick={() => setProfileImage(null)}
+                                        className="text-[10px] font-bold text-red-500 hover:text-red-600 uppercase tracking-widest"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        <input type="file" ref={profileInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, 'profile')} title="Choose profile photo" />
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

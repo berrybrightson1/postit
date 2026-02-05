@@ -18,7 +18,7 @@ export const Controls = () => {
     const { reset } = useStore()
 
     return (
-        <div className="flex flex-col gap-12 pb-20">
+        <div className="flex flex-col gap-8 lg:gap-12 pb-20">
             <header className="hidden lg:flex justify-between items-end border-b border-gray-100 pb-8">
                 <div>
                     <Logo iconClassName="h-10" textClassName="text-2xl" />
@@ -36,16 +36,15 @@ export const Controls = () => {
             </header>
 
             <section>
-                <h3 className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-300 mb-6">1 // Foundation</h3>
-                <div className="flex flex-col gap-6">
-                    <CanvasSettings />
+                <h3 className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-300 mb-4 lg:mb-6">1 // Foundation</h3>
+                <div className="flex flex-col gap-4 lg:gap-6">
                     <TemplateSelector />
                 </div>
             </section>
 
             <section>
-                <h3 className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-300 mb-6">2 // Message</h3>
-                <div className="flex flex-col gap-6">
+                <h3 className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-300 mb-4 lg:mb-6">2 // Message</h3>
+                <div className="flex flex-col gap-4 lg:gap-6">
                     <TextInputs />
                     <TypographySettings />
                 </div>
@@ -60,7 +59,6 @@ export const Controls = () => {
                 <h3 className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-300 mb-6">4 // Enhancements</h3>
                 <div className="flex flex-col gap-6">
                     <MediaUpload />
-                    <StickerControls />
                 </div>
             </section>
 

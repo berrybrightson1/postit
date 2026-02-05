@@ -3,9 +3,11 @@
 import React from 'react'
 import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
+import { TemplateLogo } from './shared/TemplateLogo'
+import { TemplateBackdrop } from './shared/TemplateBackdrop'
 
 export const MagazineCover = () => {
-    const { headline, body, footer, primaryColor, textColor, backgroundColor, mainImage, aspectRatio, backdropPosition, logo, brandingLine1, brandingLine2, fontFamily, textAlign, autoFontSize, userTier, templateId, templateStyles } = useStore()
+    const { headline, body, footer, primaryColor, textColor, backgroundColor, aspectRatio, brandingLine1, brandingLine2, fontFamily, textAlign, autoFontSize, userTier, templateId, templateStyles } = useStore()
     const bodySize = templateStyles[templateId]?.bodySize || 1
 
     // Magazines usually have a main big title (Headline) and sub-headlines (Body)
@@ -22,15 +24,8 @@ export const MagazineCover = () => {
             style={{ fontFamily: `'${fontFamily}', sans-serif` }}
         >
             {/* Background Image - The "Cover Model" */}
-            <div className="absolute inset-0 z-0">
-                {mainImage ? (
-                    <img src={mainImage} className={cn("w-full h-full object-cover", backdropPosition)} alt="Cover" />
-                ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-gray-800 to-black" />
-                )}
-                {/* Subtle overlay for text legibility */}
-                <div className="absolute inset-0 bg-black/10" />
-            </div>
+            <TemplateBackdrop overlayClassName="bg-black/10" />
+            <TemplateLogo containerClassName="!top-10 !right-10" />
 
             {/* Layout Container */}
             <div className="absolute inset-0 z-10 p-10 flex flex-col justify-between border-[20px] border-transparent">
@@ -70,8 +65,8 @@ export const MagazineCover = () => {
                                 style={{
                                     textAlign,
                                     fontSize: (autoFontSize && userTier === 'pro')
-                                        ? `${(text.length < 20 ? 1.5 : 1.25) * bodySize}rem`
-                                        : `calc(1.5rem * ${bodySize})`
+                                        ? `${(text.length < 20 ? 1.5 : 1.25)}rem`
+                                        : `1.5rem`
                                 }}
                             >
                                 {text}
@@ -84,8 +79,8 @@ export const MagazineCover = () => {
                             style={{
                                 textAlign,
                                 fontSize: (autoFontSize && userTier === 'pro')
-                                    ? `${(body.length < 50 ? 2.5 : 2) * bodySize}rem`
-                                    : `calc(2.5rem * ${bodySize})`
+                                    ? `${(body.length < 50 ? 2.5 : 2)}rem`
+                                    : `2.5rem`
                             }}
                         >
                             {body}

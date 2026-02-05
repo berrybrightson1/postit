@@ -18,6 +18,7 @@ const categories: { id: Category; name: string; icon: any }[] = [
 const variations: Record<Category, { id: TemplateId; name: string; isPremium?: boolean }[]> = {
     News: [
         { id: 'BreakingNews', name: 'Classic' },
+        { id: 'News_6', name: 'Spotlight', isPremium: true },
         { id: 'News_2', name: 'Modern', isPremium: true },
         { id: 'News_3', name: 'Ticker', isPremium: true },
         { id: 'News_4', name: 'Impact', isPremium: true },
@@ -110,7 +111,7 @@ export const TemplateSelector = () => {
     }
 
     return (
-        <div className="flex flex-col gap-8 py-1">
+        <div className="flex flex-col gap-6 lg:gap-8 py-1">
             {/* Integrated Category Grid - ALWAYS VISIBLE */}
             <div className="grid grid-cols-2 gap-4 px-1">
                 {categories.map((cat) => {
@@ -143,7 +144,7 @@ export const TemplateSelector = () => {
                 })}
             </div>
 
-            <div className="flex flex-col mt-10 px-1">
+            <div className="flex flex-col mt-6 lg:mt-10 px-1">
                 {/* Design Library Trigger Bar - PILL STYLE */}
                 <button
                     onClick={() => setIsExpanded(!isExpanded)}
@@ -204,7 +205,6 @@ export const TemplateSelector = () => {
                                         <button
                                             onClick={() => {
                                                 setTemplateId(v.id)
-                                                setIsExpanded(false)
                                             }}
                                             disabled={isLocked}
                                             className={cn(

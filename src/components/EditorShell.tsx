@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { EditorToolbar } from './editor/EditorToolbar'
 import { PreviewStage } from './PreviewStage'
 import { Controls } from './editor/Controls'
 import { useStore, useHydrated } from '@/lib/store'
@@ -52,17 +53,18 @@ export const EditorShell = () => {
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col lg:flex-row gap-24 lg:gap-0 overflow-y-auto lg:overflow-hidden bg-gray-50/50 lg:bg-transparent">
-                {/* Left Column (Desktop) / Bottom Content (Mobile) - Controls */}
-                <div className="order-2 lg:order-1 lg:w-[32%] xl:w-[28%] lg:h-full lg:overflow-y-auto p-6 pt-12 lg:px-10 lg:py-16 border-t lg:border-t-0 lg:border-r border-black/5 bg-white">
-                    <Controls />
-                </div>
-
+            <div className="flex-1 flex flex-col lg:flex-row gap-8 lg:gap-0 overflow-y-auto lg:overflow-hidden bg-gray-50/50 lg:bg-transparent">
                 {/* Center Column - Preview Stage */}
-                <div className="order-1 lg:order-2 lg:flex-1 lg:w-[50%] xl:w-[54%] flex flex-col items-center lg:justify-center p-4 lg:p-12 pb-12 min-h-[50vh] lg:h-full bg-transparent">
+                <div className="shrink-0 lg:order-2 lg:flex-1 lg:w-[50%] xl:w-[54%] flex flex-col items-center lg:justify-center p-4 lg:p-12 pb-12 h-auto lg:h-full bg-transparent">
                     <div className="w-full max-w-2xl px-2">
+                        <EditorToolbar />
                         <PreviewStage />
                     </div>
+                </div>
+
+                {/* Left Column (Desktop) / Bottom Content (Mobile) - Controls */}
+                <div className="shrink-0 lg:order-1 lg:w-[32%] xl:w-[28%] lg:h-full lg:overflow-y-auto p-6 lg:pt-12 lg:px-10 lg:py-16 border-t lg:border-t-0 lg:border-r border-black/5 bg-white relative z-10">
+                    <Controls />
                 </div>
 
                 {/* Right Column (Desktop) - Pro Panel */}
