@@ -34,7 +34,7 @@ const variations: Record<Category, { id: TemplateId; name: string; isPremium?: b
     Quote: [
         { id: 'ViralQuote', name: 'Viral' },
         { id: 'Quote_2', name: 'Elegant', isPremium: true },
-        { id: 'Quote_3', name: 'Poster', isPremium: true },
+        { id: 'Quote_3', name: 'Church', isPremium: true },
         { id: 'Quote_4', name: 'Social', isPremium: true },
         { id: 'Quote_5', name: 'Bold', isPremium: true },
     ],

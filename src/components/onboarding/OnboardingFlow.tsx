@@ -132,7 +132,7 @@ export const OnboardingFlow = () => {
                                     { id: 'MagazineCover', label: 'Magazine Cover', icon: BookOpen },
                                     { id: 'Notice_1', label: 'Public Notice', icon: FileText },
                                     { id: 'Quote_1', label: 'Viral Quote', icon: Quote },
-                                    { id: 'Notice_4', label: 'Special Post', icon: Sparkles },
+                                    { id: 'Quote_3', label: 'Church Quote', icon: Quote },
                                 ].map((option) => (
                                     <button
                                         key={option.id}

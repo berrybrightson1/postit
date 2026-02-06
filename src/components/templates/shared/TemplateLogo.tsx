@@ -9,12 +9,29 @@ interface TemplateLogoProps {
     style?: React.CSSProperties
     containerClassName?: string
     mode?: 'static' | 'draggable'
+    placeholder?: React.ReactNode
+    imageClassName?: string
 }
 
-export const TemplateLogo = ({ className, style, containerClassName, mode = 'static' }: TemplateLogoProps) => {
+export const TemplateLogo = ({ className, style, containerClassName, mode = 'static', placeholder, imageClassName }: TemplateLogoProps) => {
     const { logo, isLogoDraggable, logoPosition, setLogoPosition, setLogo } = useStore()
 
-    if (!logo) return null
+    if (!logo) {
+        if (placeholder && mode !== 'draggable') {
+            return (
+                <div
+                    className={cn(
+                        "absolute z-[100] p-2 group transition-all pointer-events-none",
+                        containerClassName
+                    )}
+                    style={style}
+                >
+                    {placeholder}
+                </div>
+            )
+        }
+        return null
+    }
 
     // If we are in static mode, but dragging is enabled, we hide this instance
     // because the global "draggable" instance in PreviewStage will take over.
@@ -76,7 +93,7 @@ export const TemplateLogo = ({ className, style, containerClassName, mode = 'sta
         >
             <img
                 src={logo}
-                className={cn("h-12 w-auto object-contain drop-shadow-xl transition-all", className)}
+                className={cn("h-12 w-auto object-contain drop-shadow-xl transition-all", className, imageClassName)}
                 alt="Logo"
                 draggable={false}
             />

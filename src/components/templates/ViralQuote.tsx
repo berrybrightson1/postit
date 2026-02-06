@@ -26,6 +26,7 @@ export const ViralQuote = () => {
     }
 
 
+
     if (variant === 'Quote_2') {
         return (
             <div className="w-full h-full flex flex-col items-center justify-center p-12 lg:p-20 relative overflow-hidden text-center" style={{ backgroundColor: backgroundColor || 'transparent', ...sharedStyle }}>
@@ -55,23 +56,38 @@ export const ViralQuote = () => {
 
     if (variant === 'Quote_3') {
         return (
-            <div className="w-full h-full flex flex-col justify-center p-12 lg:p-20 relative overflow-hidden" style={{ backgroundColor: backgroundColor || 'transparent', ...sharedStyle }}>
-                {/* Branding removed */}
-                <div className="relative z-10 flex flex-col gap-12 max-w-2xl border-l-[6px] pl-10 lg:pl-16 shadow-[20px_0_40px_-20px_rgba(0,0,0,0.1)] transition-all duration-300" style={{ borderColor: primaryColor }}>
-                    <p
-                        className="tracking-tighter leading-[1.1] whitespace-pre-wrap"
-                        style={{
-                            textAlign,
-                            fontSize: (autoFontSize && userTier === 'pro') ? undefined : `calc(1.8em * ${bodySize})`,
-                            fontWeight
-                        }}
-                    >
-                        {body || 'Your minimalist statement here...'}
-                    </p>
-                    <div className="flex flex-col gap-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Verified Statement</span>
-                        <span className="text-[14px] lg:text-[18px] font-black uppercase tracking-tight">{footer || 'IDENTITY'}</span>
+            <div className="w-full h-full flex flex-col items-center justify-center p-8 lg:p-12 relative overflow-hidden text-center" style={{ backgroundColor: backgroundColor || '#E5E7EB', ...sharedStyle }}>
+
+                {/* Logo Placeholder or Actual Logo */}
+                <div className="mb-6 relative group">
+                    <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-sm mb-4 mx-auto overflow-hidden">
+                        <TemplateLogo
+                            containerClassName="!static !inset-auto !translate-x-0 !translate-y-0 !w-full !h-full"
+                            imageClassName="!object-cover"
+                            placeholder={
+                                <div className="flex items-center justify-center w-full h-full text-gray-400">
+                                    <span className="text-4xl font-light">+</span>
+                                </div>
+                            }
+                        />
                     </div>
+                </div>
+
+                {/* Church Name */}
+                <h2 className="font-black uppercase tracking-tight mb-8" style={{ color: textColor || '#000000', fontSize: `calc(1.5rem * ${bodySize})`, fontFamily }}>
+                    {headline || 'CHURCH NAME'}
+                </h2>
+
+                {/* Main Quote */}
+                <p className="font-black uppercase break-words w-full transition-all duration-300 leading-tight mb-12" style={{ color: textColor || '#000000', textAlign: 'center', fontSize: `calc(2.5rem * ${bodySize})`, fontWeight, lineHeight, letterSpacing: `${letterSpacing}em`, fontFamily }}>
+                    {body || 'LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT.'}
+                </p>
+
+                {/* Pastor Name */}
+                <div className="mt-auto">
+                    <p className="uppercase tracking-wide opacity-80" style={{ color: textColor || '#000000', fontSize: `calc(1rem * ${bodySize})`, fontFamily }}>
+                        {footer || 'PASTOR NAME:'}
+                    </p>
                 </div>
             </div>
         )
