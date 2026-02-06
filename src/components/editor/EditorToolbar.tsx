@@ -7,103 +7,19 @@ import {
     Square, Smartphone, Eye, EyeOff, MousePointer2,
     Trash2, AlignLeft, AlignCenter, AlignRight,
     Sparkles, Pipette, Layers, Palette, Hash,
-    Type, Smile, Search, ImagePlus, X
+    Type, Smile, Search, ImagePlus, X, Link2, Loader2, RotateCcw, RotateCw,
+    Bold, Italic, Underline, UserRound
 } from 'lucide-react'
+import { UndoRedoControls } from './UndoRedoControls'
+import { ToolbarColorPicker } from './shared/ToolbarColorPicker'
+import { FontPicker } from './FontPicker'
+import { BrandedSelect } from './BrandedSelect'
 import { EMOJI_CATEGORIES } from '@/lib/constants'
+import { fontWeightMap } from '@/lib/utils'
 
-// Compact Color Picker Sub-component
-const ToolbarColorPicker = ({
-    label,
-    value,
-    onChange,
-    icon: Icon,
-    recentColors = [],
-    smartColors = [],
-    userTier,
-    showImageUpload,
-    onImageUpload,
-    onImageRemove,
-    hasImage
-}: {
-    label: string,
-    value: string,
-    onChange: (val: string) => void,
-    icon: any,
-    recentColors?: string[],
-    smartColors?: string[],
-    userTier: 'free' | 'pro',
-    showImageUpload?: boolean,
-    onImageUpload?: () => void,
-    onImageRemove?: () => void,
-    hasImage?: boolean
-}) => {
-    const pickerRef = useRef<HTMLInputElement>(null)
+const FONT_SIZES = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72]
 
-    return (
-        <div className="flex items-center gap-2 px-3 py-1 bg-gray-100/50 rounded-xl border border-transparent hover:border-black/5 transition-all">
-            <div className="flex items-center gap-1.5 mr-1">
-                <Icon size={10} className="text-gray-400" />
-                <span className="text-[9px] font-black uppercase tracking-tighter text-gray-500">{label}</span>
-            </div>
-
-            <div className="flex items-center gap-1">
-                <div
-                    onClick={() => userTier === 'pro' && pickerRef.current?.click()}
-                    className={cn(
-                        "w-6 h-6 rounded-lg border border-black/10 cursor-pointer shadow-inner relative transition-transform active:scale-90",
-                        userTier === 'free' && "grayscale opacity-50 cursor-not-allowed"
-                    )}
-                    style={{ backgroundColor: value }}
-                >
-                    <input
-                        ref={pickerRef}
-                        type="color"
-                        value={value}
-                        onChange={(e) => onChange(e.target.value)}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        disabled={userTier === 'free'}
-                    />
-                </div>
-
-                <div className="flex gap-1 ml-1">
-                    {(smartColors.length > 0 ? smartColors : recentColors).slice(0, 4).map((c, i) => (
-                        <button
-                            key={i}
-                            onClick={() => onChange(c)}
-                            className={cn(
-                                "w-5 h-5 lg:w-4 lg:h-4 rounded-full ring-1 ring-inset ring-black/5 transition-transform hover:scale-110",
-                                value.toLowerCase() === c.toLowerCase() && "ring-primary ring-2"
-                            )}
-                            style={{ backgroundColor: c }}
-                        />
-                    ))}
-                </div>
-
-                {showImageUpload && (
-                    <div className="flex items-center gap-1 ml-1 border-l border-black/5 pl-2">
-                        {hasImage ? (
-                            <button
-                                onClick={onImageRemove}
-                                className="p-1 text-red-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
-                                title="Remove Background Image"
-                            >
-                                <X size={12} strokeWidth={3} />
-                            </button>
-                        ) : (
-                            <button
-                                onClick={onImageUpload}
-                                className="p-1 text-gray-400 hover:text-primary hover:bg-white rounded-md transition-all shadow-sm active:scale-90"
-                                title="Upload Background Image"
-                            >
-                                <ImagePlus size={12} strokeWidth={3} />
-                            </button>
-                        )}
-                    </div>
-                )}
-            </div>
-        </div>
-    )
-}
+// Editor Toolbar Component
 
 export const EditorToolbar = () => {
     const {
@@ -112,37 +28,48 @@ export const EditorToolbar = () => {
         setAspectRatio,
         showReadabilityGradient,
         setShowReadabilityGradient,
-        isLogoDraggable,
-        setIsLogoDraggable,
         reset,
         textAlign,
         setTextAlign,
         templateStyles,
         setFontWeight,
+        fontStyle,
+        setFontStyle,
+        textDecoration,
+        setTextDecoration,
         applyVibe,
         userTier,
-        autoFontSize,
-        setAutoFontSize,
         primaryColor,
         textColor,
         backgroundColor,
         setPrimaryColor,
         setTextColor,
         setBackgroundColor,
+        setProfileImage,
         recentBackgrounds,
         recentTexts,
         recentAccents,
         extractedColors,
         addOverlay,
         mainImage,
-        setMainImage
+        setMainImage,
+        isScraping,
+        generateFromLink,
+        isDragMode,
+        setIsDragMode,
+        fontFamily,
+        setFontFamily,
+        setBodySize,
+        profileImage
     } = useStore()
 
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const profileInputRef = useRef<HTMLInputElement>(null)
 
     const [showStickerLibrary, setShowStickerLibrary] = useState(false)
     const [activeTab, setActiveTab] = useState('favorites')
     const [searchQuery, setSearchQuery] = useState('')
+    const [socialUrl, setSocialUrl] = useState('')
     const popoverRef = useRef<HTMLDivElement>(null)
 
     // Handle clicking outside to close popover
@@ -185,6 +112,23 @@ export const EditorToolbar = () => {
         reader.readAsDataURL(file)
     }
 
+    const handleProfileUploadTrigger = () => {
+        profileInputRef.current?.click()
+    }
+
+    const handleProfileFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        const reader = new FileReader()
+        reader.onload = (event) => {
+            if (event.target?.result) {
+                setProfileImage(event.target.result as string)
+            }
+        }
+        reader.readAsDataURL(file)
+    }
+
     const handleAddSticker = (emoji: string) => {
         addOverlay({
             type: 'sticker',
@@ -210,16 +154,37 @@ export const EditorToolbar = () => {
 
     const fontWeight = templateStyles[templateId]?.fontWeight || 'bold'
 
+    const isSpecialTemplate = ['TwitterStyle', 'InstagramPost', 'FacebookPost', 'YouTubeThumbnail'].includes(templateId)
+
+    const handleSocialGenerate = async () => {
+        if (!socialUrl) return
+        await generateFromLink(socialUrl)
+        setSocialUrl('')
+    }
+
+    const getSocialConfig = () => {
+        switch (templateId) {
+            case 'TwitterStyle': return { name: 'X', placeholder: 'Paste X (Twitter) link here...' }
+            case 'FacebookPost': return { name: 'Facebook', placeholder: 'Paste Facebook link here...' }
+            case 'InstagramPost': return { name: 'Instagram', placeholder: 'Paste Instagram link here...' }
+            case 'YouTubeThumbnail': return { name: 'YouTube', placeholder: 'Paste YouTube video link here...' }
+            default: return { name: 'Social', placeholder: 'Paste social link here...' }
+        }
+    }
+
+    const socialConfig = getSocialConfig()
+
     return (
         <div className="flex flex-col gap-2 w-full mb-6 max-w-2xl mx-auto px-4 lg:px-0">
             {/* Row 1: Framing & Vibes + Design Hub */}
-            <div className="flex items-center bg-white/70 backdrop-blur-md px-1 py-1 lg:px-2 rounded-2xl border border-black/5 shadow-sm group">
-                <div className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-6 px-3 py-1 lg:px-4 pr-10 lg:pr-12 md:pr-14">
-                    <div className="flex items-center gap-1 bg-gray-100/80 p-1 rounded-xl shrink-0">
+            <div className="relative z-50 flex items-center bg-white/70 backdrop-blur-md p-1 lg:p-2 rounded-2xl border border-black/5 shadow-sm group">
+                <div className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-4 px-3 py-1 lg:px-4 pr-6">
+                    <div className="flex items-center gap-1 p-1 h-9 bg-gray-100/80 rounded-2xl shrink-0">
                         {(['1:1', '4:5', '9:16', '16:9'] as const)
                             .filter(ratio => {
                                 if (templateId === 'YouTubeThumbnail') return ratio === '16:9'
                                 if (templateId === 'PublicNotice') return ratio !== '1:1'
+                                if (isSpecialTemplate && ratio === '9:16') return false
                                 if (ratio === '16:9') return false
                                 return true
                             })
@@ -228,7 +193,7 @@ export const EditorToolbar = () => {
                                     key={ratio}
                                     onClick={() => setAspectRatio(ratio)}
                                     className={cn(
-                                        "flex items-center gap-2 px-3 py-1 rounded-lg transition-all font-black text-[10px] tracking-tight uppercase",
+                                        "flex items-center gap-2 px-3 h-full rounded-xl transition-all font-black text-[10px] tracking-tight uppercase",
                                         aspectRatio === ratio ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-gray-600"
                                     )}
                                 >
@@ -243,7 +208,49 @@ export const EditorToolbar = () => {
 
                     <div className="w-px h-4 bg-gray-200 shrink-0 mx-[-4px]" />
 
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-1.5 p-1 h-9 bg-gray-100/80 rounded-2xl shrink-0">
+                        <div className="flex items-center gap-1 h-full">
+                            <button
+                                onClick={handleImageUploadTrigger}
+                                className="flex items-center gap-2 px-3 h-full hover:bg-white hover:text-primary hover:shadow-sm transition-all rounded-xl text-gray-500 group/btn"
+                            >
+                                <ImagePlus size={12} strokeWidth={3} className="text-gray-400 group-hover/btn:text-primary transition-colors" />
+                                <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">BG Image</span>
+                            </button>
+                            {mainImage && (
+                                <button
+                                    onClick={() => setMainImage(null)}
+                                    className="p-1.5 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-lg transition-colors aspect-square flex items-center justify-center h-full"
+                                    title="Remove background image"
+                                >
+                                    <X size={12} strokeWidth={3} />
+                                </button>
+                            )}
+                        </div>
+                        <div className="w-px h-4 bg-gray-300/50" />
+                        <div className="flex items-center gap-1 h-full">
+                            <button
+                                onClick={handleProfileUploadTrigger}
+                                className="flex items-center gap-2 px-3 h-full hover:bg-white hover:text-primary hover:shadow-sm transition-all rounded-xl text-gray-500 group/btn"
+                            >
+                                <UserRound size={12} strokeWidth={3} className="text-gray-400 group-hover/btn:text-primary transition-colors" />
+                                <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Profile</span>
+                            </button>
+                            {useStore.getState().profileImage && (
+                                <button
+                                    onClick={() => setProfileImage(null)}
+                                    className="p-1.5 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-lg transition-colors aspect-square flex items-center justify-center h-full"
+                                    title="Remove profile image"
+                                >
+                                    <X size={12} strokeWidth={3} />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="w-px h-4 bg-gray-200 shrink-0 mx-[-4px]" />
+
+                    <div className="flex items-center gap-1.5 p-1 h-9 bg-gray-100/80 rounded-2xl shrink-0">
                         {[
                             { name: 'Good News', icon: '👍' },
                             { name: 'Bad News', icon: '🚨' },
@@ -253,216 +260,293 @@ export const EditorToolbar = () => {
                             <button
                                 key={vibe.name}
                                 onClick={() => applyVibe(vibe.name)}
-                                className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100/80 hover:bg-white hover:shadow-sm transition-all text-sm border border-transparent hover:border-black/5"
+                                className="w-8 h-full flex items-center justify-center rounded-xl bg-transparent hover:bg-white hover:shadow-sm transition-all text-sm border border-transparent hover:border-black/5"
                                 title={vibe.name}
                             >
                                 {vibe.icon}
                             </button>
                         ))}
                     </div>
+                </div>
 
-                    <div className="w-px h-4 bg-gray-200 shrink-0 mx-[-4px]" />
 
-                    {/* Design Hub Tools */}
-                    <div className="flex items-center gap-2 shrink-0">
-                        <button
-                            onClick={handleAddText}
-                            className="flex items-center gap-2 px-3 py-1.5 bg-gray-100/80 hover:bg-white hover:shadow-sm transition-all rounded-xl border border-transparent hover:border-black/5 group/btn"
-                        >
-                            <Type size={12} className="text-gray-400 group-hover/btn:text-primary transition-colors" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">Text</span>
-                        </button>
+            </div>
 
-                        <div className="relative" ref={popoverRef}>
-                            <button
-                                onClick={() => setShowStickerLibrary(!showStickerLibrary)}
-                                className={cn(
-                                    "flex items-center gap-2 px-3 py-1.5 transition-all rounded-xl border border-transparent group/btn",
-                                    showStickerLibrary ? "bg-primary text-white shadow-md" : "bg-gray-100/80 hover:bg-white hover:shadow-sm hover:border-black/5 text-gray-500"
-                                )}
-                            >
-                                <Smile size={12} className={cn("transition-colors", showStickerLibrary ? "text-white" : "text-gray-400 group-hover/btn:text-primary")} />
-                                <span className={cn("text-[8px] lg:text-[9px] font-black uppercase tracking-widest", showStickerLibrary ? "text-white" : "text-gray-500")}>Stickers</span>
-                            </button>
-
-                            {showStickerLibrary && (
-                                <div className="absolute top-full left-0 mt-2 w-[calc(100vw-48px)] lg:w-[280px] bg-white rounded-2xl shadow-2xl border border-black/5 z-[100] overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top-left">
-                                    <div className="p-3 bg-gray-50/50 border-b border-gray-100 space-y-2">
-                                        <div className="relative">
-                                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={12} />
-                                            <input
-                                                type="text"
-                                                value={searchQuery}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
-                                                placeholder="Search emojis..."
-                                                className="w-full bg-white border border-gray-200 rounded-lg py-1.5 pl-8 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-                                                autoFocus
-                                            />
-                                        </div>
-
-                                        {!searchQuery && (
-                                            <div className="flex gap-1 overflow-x-auto no-scrollbar py-0.5">
-                                                {EMOJI_CATEGORIES.map(cat => (
-                                                    <button
-                                                        key={cat.id}
-                                                        onClick={() => setActiveTab(cat.id)}
-                                                        className={cn(
-                                                            "px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-tighter transition-all whitespace-nowrap",
-                                                            activeTab === cat.id ? "bg-primary text-white" : "text-gray-400 hover:bg-gray-200"
-                                                        )}
-                                                    >
-                                                        {cat.label}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="h-[200px] overflow-y-auto p-2 grid grid-cols-5 lg:grid-cols-6 gap-1 custom-scrollbar">
-                                        {displayedEmojis.map((emoji, i) => (
-                                            <button
-                                                key={i}
-                                                onClick={() => handleAddSticker(emoji)}
-                                                className="aspect-square flex items-center justify-center text-2xl lg:text-xl hover:bg-gray-100 rounded-lg transition-transform active:scale-90"
-                                            >
-                                                {emoji}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+            {/* Row 2: Typography & Alignment */}
+            <div className="relative z-40 flex items-center bg-white/70 backdrop-blur-md p-1.5 rounded-2xl border border-black/5 shadow-sm overflow-x-auto no-scrollbar">
+                <div className="flex items-center gap-2 px-2 shrink-0">
+                    <div className="w-40">
+                        <FontPicker
+                            value={fontFamily}
+                            onChange={setFontFamily}
+                            userTier={userTier}
+                        />
                     </div>
                 </div>
 
-                <div className="px-3 lg:px-4 shrink-0 bg-white/50 backdrop-blur-sm rounded-r-2xl border-l border-black/5 flex items-center justify-center h-full group-hover:bg-white transition-colors duration-300">
+                <div className="w-px h-6 bg-gray-200 shrink-0 mx-1" />
+
+                <div className="flex items-center gap-2 px-2 shrink-0">
+                    <div className="w-28">
+                        <BrandedSelect
+                            value={fontWeight}
+                            onChange={setFontWeight}
+                            options={Object.keys(fontWeightMap).map(w => ({ label: w, value: w }))}
+                            placeholder="Weight"
+                        />
+                    </div>
+                    <div className="w-20">
+                        <BrandedSelect
+                            value={Math.round((templateStyles[templateId]?.bodySize || 1) * 24)}
+                            onChange={(pt) => setBodySize(pt / 24)}
+                            options={FONT_SIZES.map(s => ({ label: `${s}`, value: s }))}
+                            placeholder="Size"
+                        />
+                    </div>
+                </div>
+
+                <div className="w-px h-6 bg-gray-200 shrink-0 mx-1" />
+
+                <div className="flex items-center gap-1.5 p-1 h-9 bg-gray-100/80 rounded-2xl shrink-0">
                     <button
-                        onClick={reset}
-                        className="p-2 text-gray-300 hover:text-red-500 transition-colors hover:bg-white rounded-lg border border-transparent hover:border-black/5 flex items-center justify-center shrink-0"
-                        title="Reset current design (reverts colors and text)"
+                        onClick={() => setTextAlign('left')}
+                        className={cn("p-2 h-full aspect-square flex items-center justify-center rounded-xl transition-all", textAlign === 'left' ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-gray-600")}
+                        title="Align Left"
                     >
-                        <Trash2 size={13} strokeWidth={3} />
+                        <AlignLeft size={14} strokeWidth={3} />
+                    </button>
+                    <button
+                        onClick={() => setTextAlign('center')}
+                        className={cn("p-2 h-full aspect-square flex items-center justify-center rounded-xl transition-all", textAlign === 'center' ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-gray-600")}
+                        title="Align Center"
+                    >
+                        <AlignCenter size={14} strokeWidth={3} />
+                    </button>
+                    <button
+                        onClick={() => setTextAlign('right')}
+                        className={cn("p-2 h-full aspect-square flex items-center justify-center rounded-xl transition-all", textAlign === 'right' ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-gray-600")}
+                        title="Align Right"
+                    >
+                        <AlignRight size={14} strokeWidth={3} />
+                    </button>
+                </div>
+
+                <div className="w-px h-6 bg-gray-200 shrink-0 mx-1" />
+
+                <div className="flex items-center gap-1.5 bg-gray-100/80 p-1 h-9 rounded-2xl shrink-0">
+                    <button
+                        onClick={() => setFontWeight(fontWeight === 'bold' ? 'normal' : 'bold')}
+                        className={cn("p-2 h-full aspect-square flex items-center justify-center rounded-xl transition-all", fontWeight === 'bold' ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-gray-600")}
+                        title="Bold"
+                    >
+                        <Bold size={14} strokeWidth={3} />
+                    </button>
+                    <button
+                        onClick={() => setFontStyle(fontStyle === 'italic' ? 'normal' : 'italic')}
+                        className={cn("p-2 h-full aspect-square flex items-center justify-center rounded-xl transition-all", fontStyle === 'italic' ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-gray-600")}
+                        title="Italic"
+                    >
+                        <Italic size={14} strokeWidth={3} />
+                    </button>
+                    <button
+                        onClick={() => setTextDecoration(textDecoration === 'underline' ? 'none' : 'underline')}
+                        className={cn("p-2 h-full aspect-square flex items-center justify-center rounded-xl transition-all", textDecoration === 'underline' ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-gray-600")}
+                        title="Underline"
+                    >
+                        <Underline size={14} strokeWidth={3} />
                     </button>
                 </div>
             </div>
 
-            {/* Row 2: Typography & Toggles */}
-            <div className="flex items-center justify-between bg-white/70 backdrop-blur-md px-4 lg:px-5 py-2 rounded-2xl border border-black/5 shadow-sm overflow-x-auto no-scrollbar">
-                <div className="flex items-center gap-4 shrink-0">
-                    {/* Alignment */}
-                    <div className="flex items-center gap-1 bg-gray-100/80 p-1 rounded-xl">
-                        {(['left', 'center', 'right'] as const).map((align) => (
-                            <button
-                                key={align}
-                                onClick={() => setTextAlign(align)}
-                                className={cn(
-                                    "p-1.5 rounded-lg transition-all",
-                                    textAlign === align ? "bg-white text-primary shadow-sm" : "text-gray-400"
-                                )}
-                            >
-                                {align === 'left' && <AlignLeft size={12} />}
-                                {align === 'center' && <AlignCenter size={12} />}
-                                {align === 'right' && <AlignRight size={12} />}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Weight */}
-                    <div className="flex items-center gap-1 bg-gray-100/80 p-1 rounded-xl">
-                        {(['normal', 'bold', 'black'] as const).map((w) => (
-                            <button
-                                key={w}
-                                onClick={() => setFontWeight(w)}
-                                className={cn(
-                                    "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-tight transition-all",
-                                    fontWeight === w ? "bg-white text-primary shadow-sm" : "text-gray-400"
-                                )}
-                            >
-                                {w}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                    {/* Smart Fit */}
-                    <button
-                        onClick={() => userTier === 'pro' && setAutoFontSize(!autoFontSize)}
-                        className="flex items-center gap-2 group"
-                        title={userTier === 'free' ? "Pro Feature: Smart Fitting" : "Toggle Smart Text Fitting"}
-                    >
-                        <div className={cn(
-                            "p-1.5 rounded-lg transition-colors",
-                            autoFontSize ? "bg-primary text-white" : "bg-gray-200/80 text-gray-400"
-                        )}>
-                            <Sparkles size={12} className={cn(autoFontSize && "animate-pulse")} />
-                        </div>
-                        <span className={cn(
-                            "text-[9px] font-black uppercase tracking-widest transition-colors whitespace-nowrap",
-                            autoFontSize ? "text-gray-900" : "text-gray-400 group-hover:text-gray-600"
-                        )}>
-                            Smart Fit
-                        </span>
-                    </button>
-
-                    <div className="w-px h-4 bg-gray-200" />
-
-                    <div className="flex items-center gap-4">
-                        <button onClick={() => setShowReadabilityGradient(!showReadabilityGradient)} className="flex items-center gap-2 group">
-                            <div className={cn("p-1.5 rounded-lg", showReadabilityGradient ? "bg-black text-white" : "bg-gray-200/80 text-gray-400")}>
-                                {showReadabilityGradient ? <Eye size={12} /> : <EyeOff size={12} />}
-                            </div>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600 whitespace-nowrap">Contrast</span>
-                        </button>
-
-                        <button onClick={() => setIsLogoDraggable(!isLogoDraggable)} className="flex items-center gap-2 group">
-                            <div className={cn("p-1.5 rounded-lg", isLogoDraggable ? "bg-primary text-white" : "bg-gray-200/80 text-gray-400")}>
-                                <MousePointer2 size={12} />
-                            </div>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600 whitespace-nowrap">Drag Logo</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Row 3: Color Controls */}
-            <div className="flex items-center gap-1 bg-white/70 backdrop-blur-md px-1 py-1 lg:px-2 rounded-2xl border border-black/5 shadow-sm overflow-x-auto no-scrollbar">
-                <div className="flex items-center gap-2 lg:gap-3 w-full shrink-0">
+            {/* Row 3: Styling (Accent & Text) */}
+            <div className="relative z-30 flex items-center bg-white/70 backdrop-blur-md p-1.5 rounded-2xl border border-black/5 shadow-sm overflow-x-auto no-scrollbar">
+                <div className="flex items-center gap-2 px-2 shrink-0">
                     <ToolbarColorPicker
-                        label="BG"
-                        value={backgroundColor}
-                        onChange={setBackgroundColor}
-                        icon={Layers}
-                        recentColors={recentBackgrounds}
+                        label="Accent"
+                        value={primaryColor}
+                        onChange={setPrimaryColor}
+                        recentColors={recentAccents}
                         smartColors={extractedColors}
                         userTier={userTier}
-                        showImageUpload
-                        onImageUpload={handleImageUploadTrigger}
-                        onImageRemove={() => setMainImage(null)}
-                        hasImage={!!mainImage}
+                        icon={Palette}
                     />
                     <ToolbarColorPicker
                         label="Text"
                         value={textColor}
                         onChange={setTextColor}
-                        icon={Palette}
                         recentColors={recentTexts}
                         smartColors={extractedColors}
                         userTier={userTier}
+                        icon={Type}
                     />
-                    {/* Hide ACCENT for Facebook template */}
-                    {templateId !== 'FacebookPost' && (
-                        <ToolbarColorPicker
-                            label="Accent"
-                            value={primaryColor}
-                            onChange={setPrimaryColor}
-                            icon={Pipette}
-                            recentColors={recentAccents}
-                            smartColors={extractedColors}
-                            userTier={userTier}
-                        />
-                    )}
+                    <ToolbarColorPicker
+                        label="Canvas"
+                        value={backgroundColor}
+                        onChange={setBackgroundColor}
+                        recentColors={[]}
+                        smartColors={[]}
+                        userTier={userTier}
+                        icon={Layers}
+                    />
                 </div>
             </div>
+
+            {/* Row 4: Navigation, View & Elements */}
+            <div className="relative z-30 flex items-center justify-between bg-white/70 backdrop-blur-md p-1.5 rounded-2xl border border-black/5 shadow-sm">
+                <div className="flex items-center gap-1.5 p-1 h-9 bg-gray-100/80 rounded-2xl shrink-0">
+                    <button
+                        onClick={handleAddText}
+                        className="flex items-center gap-2 px-3 h-full hover:bg-white hover:text-primary hover:shadow-sm transition-all rounded-xl text-gray-500 group/btn"
+                    >
+                        <Type size={12} strokeWidth={3} className="text-gray-400 group-hover/btn:text-primary transition-colors" />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Text</span>
+                    </button>
+
+                    <div className="relative" ref={popoverRef}>
+                        <button
+                            onClick={() => setShowStickerLibrary(!showStickerLibrary)}
+                            className={cn(
+                                "flex items-center gap-2 px-3 h-full transition-all rounded-xl group/btn",
+                                showStickerLibrary ? "bg-primary text-white shadow-md shadow-primary/20" : "hover:bg-white hover:shadow-sm text-gray-500"
+                            )}
+                        >
+                            <Smile size={12} strokeWidth={3} className={cn("transition-colors", showStickerLibrary ? "text-white" : "text-gray-400 group-hover/btn:text-primary")} />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Stickers</span>
+                        </button>
+
+                        {showStickerLibrary && (
+                            <div className="absolute top-full left-0 mt-3 w-[280px] bg-white rounded-2xl shadow-2xl border border-black/5 z-[100] overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top-left">
+                                <div className="p-3 bg-gray-50/50 border-b border-gray-100 space-y-2">
+                                    <div className="relative">
+                                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={12} />
+                                        <input
+                                            type="text"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            placeholder="Search emojis..."
+                                            className="w-full bg-white border border-gray-200 rounded-xl py-1.5 pl-8 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                                            autoFocus
+                                        />
+                                    </div>
+
+                                    {!searchQuery && (
+                                        <div className="flex gap-1 overflow-x-auto no-scrollbar py-0.5">
+                                            {EMOJI_CATEGORIES.map(cat => (
+                                                <button
+                                                    key={cat.id}
+                                                    onClick={() => setActiveTab(cat.id)}
+                                                    className={cn(
+                                                        "px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter transition-all whitespace-nowrap",
+                                                        activeTab === cat.id ? "bg-primary text-white" : "text-gray-400 hover:bg-gray-200"
+                                                    )}
+                                                >
+                                                    {cat.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="h-[200px] overflow-y-auto p-2 grid grid-cols-5 lg:grid-cols-6 gap-1 custom-scrollbar">
+                                    {displayedEmojis.map((emoji, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() => handleAddSticker(emoji)}
+                                            className="aspect-square flex items-center justify-center text-2xl lg:text-xl hover:bg-gray-100 rounded-xl transition-transform active:scale-90"
+                                        >
+                                            {emoji}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2 p-1 h-9 bg-gray-100/80 rounded-2xl shrink-0">
+                    <button
+                        onClick={() => setShowReadabilityGradient(!showReadabilityGradient)}
+                        className={cn(
+                            "flex items-center gap-2 px-3 h-full transition-all rounded-xl group",
+                            showReadabilityGradient ? "bg-black text-white shadow-sm" : "hover:bg-white text-gray-500 hover:text-gray-800"
+                        )}
+                    >
+                        <Eye size={12} strokeWidth={3} className={cn("transition-colors", showReadabilityGradient ? "text-white" : "text-gray-400 group-hover:text-gray-800")} />
+                        <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Contrast</span>
+                    </button>
+
+                    <button
+                        onClick={() => setIsDragMode(!isDragMode)}
+                        className={cn(
+                            "flex items-center gap-2 px-3 h-full transition-all rounded-xl group",
+                            isDragMode ? "bg-primary text-white shadow-md shadow-primary/20" : "hover:bg-white text-gray-500 hover:text-gray-800"
+                        )}
+                    >
+                        <MousePointer2 size={12} strokeWidth={3} className={cn("transition-colors", isDragMode ? "text-white" : "text-gray-400 group-hover:text-primary")} />
+                        <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Freeform</span>
+                    </button>
+                </div>
+
+                <div className="flex items-center gap-2 p-1 h-9 bg-gray-100/80 rounded-2xl shrink-0">
+                    <div className="flex items-center gap-1 h-full">
+                        <UndoRedoControls />
+                    </div>
+                    <div className="w-px h-6 bg-black/5 mx-1" />
+                    <button
+                        onClick={reset}
+                        className="p-2 h-full aspect-square flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors hover:bg-white rounded-xl"
+                        title="Reset current design"
+                    >
+                        <Trash2 size={16} strokeWidth={2.5} />
+                    </button>
+                </div>
+            </div>
+
+            {/* Row 5: Social Link Generator (Special Templates ONLY) */}
+            {
+                isSpecialTemplate && (
+                    <div className="relative z-20 flex items-center gap-2 bg-white/70 backdrop-blur-md px-3 py-2 rounded-2xl border border-black/5 shadow-sm animate-in slide-in-from-top-1 duration-300">
+                        <div className="flex items-center gap-2 pl-1 pr-2 border-r border-black/5 shrink-0">
+                            <Sparkles size={12} className="text-primary animate-pulse" />
+                            <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">{socialConfig.name} Auto-Gen</span>
+                        </div>
+
+                        <div className="flex-1 relative flex items-center">
+                            <Link2 size={12} className="absolute left-2.5 text-gray-400" />
+                            <input
+                                type="text"
+                                value={socialUrl}
+                                onChange={(e) => setSocialUrl(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSocialGenerate()}
+                                placeholder={socialConfig.placeholder}
+                                className="w-full bg-gray-100/50 border border-transparent rounded-xl py-1.5 pl-8 pr-3 text-[11px] focus:bg-white focus:border-primary/20 focus:outline-none transition-all"
+                                disabled={isScraping}
+                                title={`Paste ${socialConfig.name} link`}
+                            />
+                        </div>
+
+                        <button
+                            onClick={handleSocialGenerate}
+                            disabled={!socialUrl || isScraping}
+                            className={cn(
+                                "flex items-center gap-2 px-4 py-1.5 rounded-xl transition-all font-black text-[10px] uppercase tracking-wider shrink-0",
+                                isScraping || !socialUrl
+                                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                    : "bg-primary text-white shadow-md active:scale-95 hover:shadow-primary/20"
+                            )}
+                        >
+                            {isScraping ? (
+                                <>
+                                    <Loader2 size={12} className="animate-spin" />
+                                    <span>Wait...</span>
+                                </>
+                            ) : (
+                                <span>Generate</span>
+                            )}
+                        </button>
+                    </div>
+                )
+            }
+
             <input
                 ref={fileInputRef}
                 id="bg-image-upload"
@@ -471,6 +555,16 @@ export const EditorToolbar = () => {
                 className="hidden"
                 onChange={handleFileChange}
                 title="Upload background image"
+                placeholder="Upload background image"
+            />
+            <input
+                ref={profileInputRef}
+                id="profile-image-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleProfileFileChange}
+                title="Upload profile image"
             />
         </div>
     )

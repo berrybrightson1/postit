@@ -24,7 +24,9 @@ interface TemplateStyle {
     lineHeight: number
     letterSpacing: number
     // Typography
-    fontWeight: 'normal' | 'bold' | 'black'
+    fontWeight: 'thin' | 'normal' | 'medium' | 'semibold' | 'bold' | 'extra-bold' | 'black'
+    fontStyle: 'normal' | 'italic'
+    textDecoration: 'none' | 'underline'
     fontFamily: FontFamily
     textAlign: TextAlign
 }
@@ -60,8 +62,13 @@ interface PostitState {
     brandingLine1: string
     brandingLine2: string
     showWatermark: boolean
-    isLogoDraggable: boolean
+    isDragMode: boolean
+    elementPositions: Record<string, { x: number, y: number }>
     logoPosition: { x: number, y: number }
+    fontWeight: 'thin' | 'normal' | 'medium' | 'semibold' | 'bold' | 'extra-bold' | 'black'
+    fontStyle: 'normal' | 'italic'
+    textDecoration: 'none' | 'underline'
+    textAlign: TextAlign
 
     // Computed properties
     bodySize: number
@@ -82,7 +89,7 @@ interface PostitState {
     user: { name: string, avatar: string } | null
     isProPanelOpen: boolean
     autoFontSize: boolean
-    textAlign: TextAlign
+    isScraping: boolean
 
     // Actions
     setTemplateId: (id: TemplateId) => void
@@ -101,7 +108,8 @@ interface PostitState {
     setBrandingLine1: (text: string) => void
     setBrandingLine2: (text: string) => void
     setShowWatermark: (show: boolean) => void
-    setIsLogoDraggable: (draggable: boolean) => void
+    setIsDragMode: (enabled: boolean) => void
+    setElementPosition: (id: string, pos: { x: number, y: number }) => void
     setLogoPosition: (pos: { x: number, y: number }) => void
     setBodySize: (size: number) => void
     setUserTier: (tier: 'free' | 'pro') => void
@@ -129,11 +137,14 @@ interface PostitState {
 
     setLineHeight: (size: number) => void
     setLetterSpacing: (size: number) => void
-    setFontWeight: (weight: 'normal' | 'bold' | 'black') => void
+    setFontWeight: (weight: 'thin' | 'normal' | 'medium' | 'semibold' | 'bold' | 'extra-bold' | 'black') => void
     setFontFamily: (font: FontFamily) => void
     setTextAlign: (align: TextAlign) => void
+    setFontStyle: (style: 'normal' | 'italic') => void
+    setTextDecoration: (decoration: 'none' | 'underline') => void
     setTemplateAndReset: (id: TemplateId) => void
     reset: () => void
+    generateFromLink: (url: string) => Promise<void>
 }
 
 export const defaultPalette = ['#3A2D9C', '#CE1126', '#006B3F', '#FCD116', '#000000', '#FFFFFF', '#E11D48']
@@ -144,28 +155,28 @@ const INSTAGRAM_LOGO = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD
 const TWITTER_X_LOGO = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHJ4PSI4IiBmaWxsPSIjMDAwMDAwIi8+PHBhdGggZD0iTTI3LjUgMjRMMzUuNSAxNEgzMy41TDI2LjUgMjIuNUwyMSAxNEgxMi41TDIxIDI1TDEyLjUgMzVIMTQuNUwyMS41IDI2LjVMMjcgMzVIMzUuNUwyNy41IDI0WiIgZmlsbD0id2hpdGUiLz48L3N2Zz4='
 
 const defaultStyles: Record<TemplateId, TemplateStyle> = {
-    News_1: { primaryColor: '#3A2D9C', textColor: '#FFFFFF', backgroundColor: '#0f172a', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Inter', textAlign: 'left' },
-    News_2: { primaryColor: '#E11D48', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.3, letterSpacing: -0.01, fontWeight: 'black', fontFamily: 'Outfit', textAlign: 'left' },
-    News_3: { primaryColor: '#10B981', textColor: '#FFFFFF', backgroundColor: '#064E3B', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.75, lineHeight: 1.5, letterSpacing: 0.02, fontWeight: 'normal', fontFamily: 'Space Grotesk', textAlign: 'left' },
-    News_4: { primaryColor: '#F59E0B', textColor: '#111827', backgroundColor: '#FFFBEB', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: -0.05, fontWeight: 'black', fontFamily: 'Bebas Neue', textAlign: 'left' },
-    News_5: { primaryColor: '#6366F1', textColor: '#FFFFFF', backgroundColor: '#1E1B4B', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Inter', textAlign: 'left' },
-    News_6: { primaryColor: '#E11D48', textColor: '#0F172A', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: -0.02, fontWeight: 'black', fontFamily: 'Inter', textAlign: 'left' },
-    Notice_1: { primaryColor: '#000000', textColor: '#111827', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.6, letterSpacing: 0, fontWeight: 'normal', fontFamily: 'Inter', textAlign: 'left' },
-    Notice_2: { primaryColor: '#2563EB', textColor: '#FFFFFF', backgroundColor: '#EFF6FF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Outfit', textAlign: 'left' },
-    Notice_3: { primaryColor: '#D97706', textColor: '#111827', backgroundColor: '#FEF3C7', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.75, lineHeight: 1.7, letterSpacing: 0.05, fontWeight: 'normal', fontFamily: 'Space Grotesk', textAlign: 'left' },
-    Notice_4: { primaryColor: '#4F46E5', textColor: '#FFFFFF', backgroundColor: '#EEF2FF', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.5, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Playfair Display', textAlign: 'left' },
-    Notice_5: { primaryColor: '#7C3AED', textColor: '#FFFFFF', backgroundColor: '#F5F3FF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.3, letterSpacing: -0.02, fontWeight: 'black', fontFamily: 'Outfit', textAlign: 'left' },
-    Quote_1: { primaryColor: '#E11D48', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.3, letterSpacing: -0.02, fontWeight: 'black', fontFamily: 'Inter', textAlign: 'left' },
-    Quote_2: { primaryColor: '#F472B6', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: -0.04, fontWeight: 'black', fontFamily: 'Playfair Display', textAlign: 'left' },
-    Quote_3: { primaryColor: '#E5E7EB', textColor: '#000000', backgroundColor: '#E5E7EB', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 1, lineHeight: 1.1, letterSpacing: -0.02, fontWeight: 'black', fontFamily: 'Inter', textAlign: 'center' },
-    Quote_4: { primaryColor: '#10B981', textColor: '#FFFFFF', backgroundColor: '#064E3B', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.5, letterSpacing: 0.02, fontWeight: 'normal', fontFamily: 'Outfit', textAlign: 'left' },
-    Quote_5: { primaryColor: '#F97316', textColor: '#FFFFFF', backgroundColor: '#262626', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.1, letterSpacing: -0.06, fontWeight: 'black', fontFamily: 'Bebas Neue', textAlign: 'left' },
-    SportsScore: { primaryColor: '#FCD116', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.1, letterSpacing: -0.05, fontWeight: 'black', fontFamily: 'Bebas Neue', textAlign: 'left' },
-    TwitterStyle: { primaryColor: '#1DA1F2', textColor: '#000000', backgroundColor: '#FFFFFF', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.5, letterSpacing: 0, fontWeight: 'normal', fontFamily: 'Inter', textAlign: 'left' },
-    InstagramPost: { primaryColor: '#E1306C', textColor: '#000000', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Inter', textAlign: 'left' },
-    FacebookPost: { primaryColor: '#1877F2', textColor: '#000000', backgroundColor: '#e11d48', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.5, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Inter', textAlign: 'left' },
-    YouTubeThumbnail: { primaryColor: '#FF0000', textColor: '#FFFFFF', backgroundColor: '#F3F4F6', aspectRatio: '16:9', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: 0, fontWeight: 'bold', fontFamily: 'Impact', textAlign: 'left' },
-    MagazineCover: { primaryColor: '#FFFFFF', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: 0.1, fontWeight: 'bold', fontFamily: 'Playfair Display', textAlign: 'left' },
+    News_1: { primaryColor: '#3A2D9C', textColor: '#FFFFFF', backgroundColor: '#0f172a', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Inter', textAlign: 'left' },
+    News_2: { primaryColor: '#E11D48', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.3, letterSpacing: -0.01, fontWeight: 'black', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Outfit', textAlign: 'left' },
+    News_3: { primaryColor: '#10B981', textColor: '#FFFFFF', backgroundColor: '#064E3B', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.75, lineHeight: 1.5, letterSpacing: 0.02, fontWeight: 'normal', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Space Grotesk', textAlign: 'left' },
+    News_4: { primaryColor: '#F59E0B', textColor: '#111827', backgroundColor: '#FFFBEB', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: -0.05, fontWeight: 'black', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Bebas Neue', textAlign: 'left' },
+    News_5: { primaryColor: '#6366F1', textColor: '#FFFFFF', backgroundColor: '#1E1B4B', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Inter', textAlign: 'left' },
+    News_6: { primaryColor: '#E11D48', textColor: '#0F172A', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: -0.02, fontWeight: 'black', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Inter', textAlign: 'left' },
+    Notice_1: { primaryColor: '#000000', textColor: '#111827', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.6, letterSpacing: 0, fontWeight: 'normal', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Inter', textAlign: 'left' },
+    Notice_2: { primaryColor: '#2563EB', textColor: '#FFFFFF', backgroundColor: '#EFF6FF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Outfit', textAlign: 'left' },
+    Notice_3: { primaryColor: '#D97706', textColor: '#111827', backgroundColor: '#FEF3C7', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.75, lineHeight: 1.7, letterSpacing: 0.05, fontWeight: 'normal', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Space Grotesk', textAlign: 'left' },
+    Notice_4: { primaryColor: '#4F46E5', textColor: '#FFFFFF', backgroundColor: '#EEF2FF', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.5, letterSpacing: 0, fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Playfair Display', textAlign: 'left' },
+    Notice_5: { primaryColor: '#7C3AED', textColor: '#FFFFFF', backgroundColor: '#F5F3FF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.3, letterSpacing: -0.02, fontWeight: 'black', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Outfit', textAlign: 'left' },
+    Quote_1: { primaryColor: '#E11D48', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.3, letterSpacing: -0.02, fontWeight: 'black', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Inter', textAlign: 'left' },
+    Quote_2: { primaryColor: '#F472B6', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: -0.04, fontWeight: 'black', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Playfair Display', textAlign: 'left' },
+    Quote_3: { primaryColor: '#E5E7EB', textColor: '#000000', backgroundColor: '#E5E7EB', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 1, lineHeight: 1.1, letterSpacing: -0.02, fontWeight: 'black', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Inter', textAlign: 'center' },
+    Quote_4: { primaryColor: '#10B981', textColor: '#FFFFFF', backgroundColor: '#064E3B', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.5, letterSpacing: 0.02, fontWeight: 'normal', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Outfit', textAlign: 'left' },
+    Quote_5: { primaryColor: '#F97316', textColor: '#FFFFFF', backgroundColor: '#262626', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.1, letterSpacing: -0.06, fontWeight: 'black', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Bebas Neue', textAlign: 'left' },
+    SportsScore: { primaryColor: '#FCD116', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.1, letterSpacing: -0.05, fontWeight: 'black', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Bebas Neue', textAlign: 'left' },
+    TwitterStyle: { primaryColor: '#1DA1F2', textColor: '#000000', backgroundColor: '#FFFFFF', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.5, letterSpacing: 0, fontWeight: 'normal', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Inter', textAlign: 'left' },
+    InstagramPost: { primaryColor: '#E1306C', textColor: '#000000', backgroundColor: '#FFFFFF', aspectRatio: '4:5', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.4, letterSpacing: 0, fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Inter', textAlign: 'left' },
+    FacebookPost: { primaryColor: '#1877F2', textColor: '#000000', backgroundColor: '#e11d48', aspectRatio: '1:1', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.5, letterSpacing: 0, fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Inter', textAlign: 'left' },
+    YouTubeThumbnail: { primaryColor: '#FF0000', textColor: '#FFFFFF', backgroundColor: '#F3F4F6', aspectRatio: '16:9', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: 0, fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Impact', textAlign: 'left' },
+    MagazineCover: { primaryColor: '#FFFFFF', textColor: '#FFFFFF', backgroundColor: '#000000', aspectRatio: '9:16', backdropPosition: 'object-center', bodySize: 0.8, lineHeight: 1.2, letterSpacing: 0.1, fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', fontFamily: 'Playfair Display', textAlign: 'left' },
     PublicNotice: {} as any, ViralQuote: {} as any, BreakingNews: {} as any
 }
 
@@ -218,13 +229,16 @@ const initialState = {
     footer: 'PRESIDENT BERRY BRIGHTSON',
     email: 'president@berry2028.gov',
     ...defaultStyles.News_6,
+    fontStyle: 'normal' as 'normal' | 'italic',
+    textDecoration: 'none' as 'none' | 'underline',
     mainImage: '', // Default to empty for explicit placeholders
     logo: '',
     profileImage: '',
     brandingLine1: 'BERRY 2028',
     brandingLine2: 'CAMPAIGN HQ',
     showWatermark: true,
-    isLogoDraggable: true,
+    isDragMode: false,
+    elementPositions: {},
     logoPosition: { x: 8, y: 8 },
     templateStyles: { ...defaultStyles },
     recentBackgrounds: [...defaultPalette],
@@ -239,6 +253,7 @@ const initialState = {
     showReadabilityGradient: false,
     extractedColors: [],
     hasOnboarded: false,
+    isScraping: false,
 }
 
 import { persist } from 'zustand/middleware'
@@ -336,7 +351,13 @@ export const useStore = create<PostitState>()(
                 setBrandingLine1: (brandingLine1) => set({ brandingLine1 }),
                 setBrandingLine2: (brandingLine2) => set({ brandingLine2 }),
                 setShowWatermark: (showWatermark) => set({ showWatermark }),
-                setIsLogoDraggable: (isLogoDraggable) => set({ isLogoDraggable }),
+                setIsDragMode: (isDragMode) => set({ isDragMode }),
+                setElementPosition: (id, pos) => set((state) => ({
+                    elementPositions: {
+                        ...state.elementPositions,
+                        [id]: pos
+                    }
+                })),
                 setLogoPosition: (logoPosition) => set({ logoPosition }),
                 setBodySize: (bodySize) => {
                     const { templateId, templateStyles } = get()
@@ -470,7 +491,7 @@ export const useStore = create<PostitState>()(
                         }
                     })
                 },
-                setFontWeight: (fontWeight) => {
+                setFontWeight: (fontWeight: 'thin' | 'normal' | 'medium' | 'semibold' | 'bold' | 'extra-bold' | 'black') => {
                     const { templateId, templateStyles } = get()
                     set({
                         templateStyles: {
@@ -505,6 +526,26 @@ export const useStore = create<PostitState>()(
                                 ...templateStyles[templateId],
                                 textAlign
                             }
+                        }
+                    })
+                },
+                setFontStyle: (fontStyle: 'normal' | 'italic') => {
+                    const { templateId, templateStyles } = get()
+                    set({
+                        fontStyle,
+                        templateStyles: {
+                            ...templateStyles,
+                            [templateId]: { ...templateStyles[templateId], fontStyle }
+                        }
+                    })
+                },
+                setTextDecoration: (textDecoration: 'none' | 'underline') => {
+                    const { templateId, templateStyles } = get()
+                    set({
+                        textDecoration,
+                        templateStyles: {
+                            ...templateStyles,
+                            [templateId]: { ...templateStyles[templateId], textDecoration }
                         }
                     })
                 },
@@ -553,17 +594,66 @@ export const useStore = create<PostitState>()(
                     useStore.persist.clearStorage()
                     set(initialState)
                 },
+
+                generateFromLink: async (url: string) => {
+                    const { templateId, templateStyles } = get()
+
+                    set({ isScraping: true })
+
+                    try {
+                        const response = await fetch('/api/scrape-link', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ url })
+                        })
+
+                        if (!response.ok) {
+                            const errorData = await response.json()
+                            throw new Error(errorData.error || 'Failed to fetch link data')
+                        }
+
+                        const data = await response.json()
+
+                        set({
+                            headline: data.author || data.title?.split(' on ')[0] || get().headline,
+                            body: data.description || get().body,
+                            footer: data.date || data.title || get().footer,
+                            email: data.authorHandle || get().email,
+                            mainImage: data.image || get().mainImage,
+                            // If it's a social template, try to use the image as profile image too if appropriate
+                            profileImage: (templateId === 'TwitterStyle' || templateId === 'FacebookPost' || templateId === 'InstagramPost')
+                                ? (data.image || get().profileImage)
+                                : get().profileImage
+                        })
+
+                    } catch (error) {
+                        console.error('Generation failed:', error)
+                        // Note: We could add a toast here if we had toast in the store, 
+                        // but usually it's better to handle UI feedback in the component.
+                    } finally {
+                        set({ isScraping: false })
+                    }
+                },
             }),
             {
                 name: 'postit-storage',
                 partialize: (state) => {
-                    const { mainImage, ...rest } = state
+                    // Exclude large data fields to prevent QuotaExceededError
+                    const {
+                        mainImage,
+                        profileImage,
+                        // also exclude user object if it contains a base64 avatar
+                        user,
+                        ...rest
+                    } = state
                     return rest
                 },
                 onRehydrateStorage: () => {
                     return (state, error) => {
                         if (error) {
                             console.error('Postit Storage: hydration failed', error)
+                            // Optional: Clear storage on error
+                            // localStorage.removeItem('postit-storage')
                         }
                     }
                 },

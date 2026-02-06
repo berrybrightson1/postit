@@ -5,9 +5,10 @@ import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
 import { TemplateLogo } from './shared/TemplateLogo'
 import { TemplateBackdrop } from './shared/TemplateBackdrop'
+import { fontWeightMap } from '@/lib/utils'
 
 export const SportsScore = () => {
-    const { headline, body, footer, primaryColor, textColor, backgroundColor, aspectRatio, brandingLine1, brandingLine2, fontFamily, textAlign, autoFontSize, userTier, templateId } = useStore()
+    const { headline, body, footer, primaryColor, textColor, backgroundColor, aspectRatio, brandingLine1, brandingLine2, fontFamily, fontWeight, textAlign, fontStyle, textDecoration, autoFontSize, userTier, templateId } = useStore()
     const bodySize = 1
 
     return (
@@ -37,8 +38,11 @@ export const SportsScore = () => {
 
                 {/* Headline - Bold Slanted Style */}
                 <h1
-                    className="text-5xl font-black italic tracking-tighter uppercase leading-[0.8] mb-4 transform -skew-x-6"
-                    style={{ color: primaryColor }}
+                    className="text-5xl italic tracking-tighter uppercase leading-[0.8] mb-4 transform -skew-x-6"
+                    style={{
+                        color: primaryColor,
+                        fontWeight: fontWeightMap[fontWeight]
+                    }}
                 >
                     {headline || 'BERRY 2028'}
                 </h1>
@@ -46,12 +50,14 @@ export const SportsScore = () => {
                 {/* Body Content */}
                 <div className="bg-white p-4 transform -skew-x-6 border-l-8" style={{ borderColor: primaryColor }}>
                     <p
-                        className="text-black font-black uppercase leading-none transform skew-x-6 whitespace-pre-wrap"
+                        className="text-black uppercase leading-none transform skew-x-6 whitespace-pre-wrap"
                         style={{
                             textAlign,
+                            fontWeight: fontWeightMap[fontWeight],
                             fontSize: (autoFontSize && userTier === 'pro')
                                 ? `${(body.length < 30 ? 2 : body.length < 60 ? 1.5 : 1.2) * bodySize}rem`
-                                : `calc(1.5rem * ${bodySize})`
+                                : `calc(1.5rem * ${bodySize})`,
+                            fontStyle, textDecoration
                         }}
                     >
                         {body || 'A Score For The People: Bright Future Guaranteed!'}

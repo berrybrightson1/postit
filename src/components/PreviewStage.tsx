@@ -31,7 +31,7 @@ export const PreviewStage = () => {
                     <TemplateLogo mode="draggable" />
 
                     {/* Overlays Layer */}
-                    <div className="absolute inset-0 z-50 pointer-events-none">
+                    <div className="absolute inset-0 z-[100] pointer-events-none">
                         <div className="relative w-full h-full pointer-events-auto">
                             {overlays.map((overlay) => (
                                 <DraggableOverlay

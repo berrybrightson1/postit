@@ -5,9 +5,10 @@ import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
 import { TemplateLogo } from './shared/TemplateLogo'
 import { TemplateBackdrop } from './shared/TemplateBackdrop'
+import { fontWeightMap } from '@/lib/utils'
 
 export const MagazineCover = () => {
-    const { headline, body, footer, primaryColor, textColor, backgroundColor, aspectRatio, brandingLine1, brandingLine2, fontFamily, textAlign, autoFontSize, userTier, templateId, templateStyles } = useStore()
+    const { headline, body, footer, primaryColor, textColor, backgroundColor, aspectRatio, brandingLine1, brandingLine2, fontFamily, fontWeight, textAlign, fontStyle, textDecoration, autoFontSize, userTier, templateId, templateStyles } = useStore()
     const bodySize = templateStyles[templateId]?.bodySize || 1
 
     // Magazines usually have a main big title (Headline) and sub-headlines (Body)
@@ -34,9 +35,10 @@ export const MagazineCover = () => {
                 {/* Header: Large Branding */}
                 <div className="flex flex-col items-center">
                     <h1
-                        className="font-black uppercase tracking-tighter leading-[0.7] text-center w-full break-words"
+                        className="uppercase tracking-tighter leading-[0.7] text-center w-full break-words"
                         style={{
                             color: primaryColor,
+                            fontWeight: fontWeightMap[fontWeight],
                             fontSize: (autoFontSize && userTier === 'pro')
                                 ? `${(headline.length < 10 ? 6 : headline.length < 20 ? 4 : 3) * bodySize}rem`
                                 : `calc(6rem * ${bodySize})`
@@ -62,9 +64,10 @@ export const MagazineCover = () => {
                                 Exclusive
                             </span>
                             <span
-                                className="font-black text-white leading-none uppercase italic"
+                                className="text-white leading-none uppercase italic"
                                 style={{
                                     textAlign,
+                                    fontWeight: fontWeightMap[fontWeight],
                                     fontSize: (autoFontSize && userTier === 'pro')
                                         ? `${(text.length < 20 ? 1.5 : 1.25)}rem`
                                         : `1.5rem`
@@ -76,12 +79,14 @@ export const MagazineCover = () => {
                     ))}
                     {!subHeadlines.length && (
                         <span
-                            className="font-black text-white leading-tight uppercase italic drop-shadow-lg"
+                            className="text-white leading-tight uppercase italic drop-shadow-lg"
                             style={{
                                 textAlign,
+                                fontWeight: fontWeightMap[fontWeight],
                                 fontSize: (autoFontSize && userTier === 'pro')
                                     ? `${(body.length < 50 ? 2.5 : 2)}rem`
-                                    : `2.5rem`
+                                    : `2.5rem`,
+                                fontStyle, textDecoration
                             }}
                         >
                             {body}

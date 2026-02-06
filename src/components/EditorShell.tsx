@@ -53,10 +53,10 @@ export const EditorShell = () => {
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col lg:flex-row gap-8 lg:gap-0 overflow-y-auto lg:overflow-hidden bg-gray-50/50 lg:bg-transparent">
+            <div className="flex-1 flex flex-col lg:flex-row gap-8 lg:gap-0 overflow-y-auto lg:overflow-hidden bg-gray-50/50 lg:bg-transparent no-scrollbar">
                 {/* Center Column - Preview Stage */}
-                <div className="shrink-0 lg:order-2 lg:flex-1 lg:w-[50%] xl:w-[54%] flex flex-col items-center lg:justify-center p-4 lg:p-12 pb-12 h-auto lg:h-full bg-transparent">
-                    <div className="w-full max-w-2xl px-2">
+                <div className="shrink-0 lg:order-2 lg:flex-1 lg:w-[50%] xl:w-[54%] flex flex-col items-center p-4 lg:p-12 pb-12 h-auto lg:h-full bg-transparent overflow-y-auto no-scrollbar">
+                    <div className="w-full max-w-2xl px-2 my-auto">
                         <EditorToolbar />
                         <PreviewStage />
                     </div>

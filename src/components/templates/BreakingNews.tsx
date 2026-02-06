@@ -6,9 +6,10 @@ import { fontWeightMap, cn } from '@/lib/utils'
 
 import { TemplateLogo } from './shared/TemplateLogo'
 import { TemplateBackdrop } from './shared/TemplateBackdrop'
+import { DraggableElement } from '../canvas/DraggableElement'
 
 export const BreakingNews = () => {
-    const { headline, body, footer, profileImage, primaryColor, textColor, backgroundColor, showWatermark, aspectRatio, brandingLine1, brandingLine2, templateId, templateStyles, fontFamily, textAlign, autoFontSize, userTier } = useStore()
+    const { headline, body, footer, profileImage, primaryColor, textColor, backgroundColor, showWatermark, aspectRatio, brandingLine1, brandingLine2, templateId, templateStyles, fontFamily, textAlign, fontStyle, textDecoration, autoFontSize, userTier } = useStore()
 
     const style = templateStyles[templateId] || {}
     const bodySize = style.bodySize || 1
@@ -30,6 +31,8 @@ export const BreakingNews = () => {
     const sharedStyle = {
         fontFamily: `'${fontFamily}', sans-serif`,
         color: textColor || '#FFF',
+        fontStyle: fontStyle || 'normal',
+        textDecoration: textDecoration || 'none'
     }
 
     if (variant === 'News_2') {
@@ -45,38 +48,44 @@ export const BreakingNews = () => {
                     </div>
                 </div>
 
-                <TemplateLogo containerClassName="!left-[32px] !top-[70px]" className="h-8" />
+                <TemplateLogo containerClassName="!left-8 !top-[70px]" className="h-8" />
 
                 <div className="mt-auto relative z-10 p-6 lg:p-10 w-full mb-4 lg:mb-8">
                     <div className="flex flex-col gap-0 max-w-full">
                         {/* Glassmorphism Title Plate */}
-                        <div className="self-start px-5 py-2 relative overflow-hidden backdrop-blur-md bg-white/10 border-l-4 rounded-t-xl" style={{ borderLeftColor: accentColor }}>
-                            <h1 className="text-xs lg:text-sm font-black tracking-[0.4em] uppercase italic text-white/70">{headline || 'BREAKING NEWS'}</h1>
-                        </div>
-                        {/* Glassmorphism Body Plate */}
-                        <div className="backdrop-blur-xl bg-black/60 p-8 lg:p-12 border border-white/10 shadow-2xl rounded-b-3xl rounded-tr-3xl relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 opacity-5 select-none">
-                                <div className="text-[120px] font-black italic tracking-tighter leading-none">{headline?.[0] || 'B'}</div>
+                        <DraggableElement id="headline" className="self-start">
+                            <div className="px-5 py-2 relative overflow-hidden backdrop-blur-md bg-white/10 border-l-4 rounded-t-xl" style={{ borderLeftColor: accentColor }}>
+                                <h1 className="text-xs lg:text-sm font-black tracking-[0.4em] uppercase italic text-white/70">{headline || 'BREAKING NEWS'}</h1>
                             </div>
-                            <p
-                                className="text-3xl lg:text-6xl font-black leading-[1.1] tracking-tighter whitespace-pre-wrap transition-all duration-300 drop-shadow-lg"
-                                style={{
-                                    textAlign,
-                                    fontSize: (autoFontSize && userTier === 'pro') ? undefined : `calc(1em * ${bodySize})`,
-                                    lineHeight,
-                                    letterSpacing: `${letterSpacing}em`,
-                                    fontWeight,
-                                    color: '#FFFFFF'
-                                }}
-                            >
-                                {body || 'The future is Bright, and it is absolutely Berry-tastic!'}
-                            </p>
-                        </div>
+                        </DraggableElement>
+                        {/* Glassmorphism Body Plate */}
+                        <DraggableElement id="body">
+                            <div className="backdrop-blur-xl bg-black/60 p-8 lg:p-12 border border-white/10 shadow-2xl rounded-b-3xl rounded-tr-3xl relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 select-none">
+                                    <div className="text-[120px] font-black italic tracking-tighter leading-none">{headline?.[0] || 'B'}</div>
+                                </div>
+                                <p
+                                    className="text-3xl lg:text-6xl font-black leading-[1.1] tracking-tighter whitespace-pre-wrap transition-all duration-300 drop-shadow-lg"
+                                    style={{
+                                        textAlign,
+                                        fontSize: (autoFontSize && userTier === 'pro') ? undefined : `calc(1em * ${bodySize})`,
+                                        lineHeight,
+                                        letterSpacing: `${letterSpacing}em`,
+                                        fontWeight,
+                                        color: '#FFFFFF'
+                                    }}
+                                >
+                                    {body || 'The future is Bright, and it is absolutely Berry-tastic!'}
+                                </p>
+                            </div>
+                        </DraggableElement>
                         {/* Footer attribution for News_2 */}
                         {footer && (
-                            <div className="self-end mt-2 px-4 py-1 bg-black/40 backdrop-blur rounded flex items-center gap-2 border border-white/5">
-                                <span className="text-[10px] uppercase tracking-widest text-white/60 font-bold">{footer}</span>
-                            </div>
+                            <DraggableElement id="footer" className="self-end mt-2">
+                                <div className="px-4 py-1 bg-black/40 backdrop-blur rounded flex items-center gap-2 border border-white/5">
+                                    <span className="text-[10px] uppercase tracking-widest text-white/60 font-bold">{footer}</span>
+                                </div>
+                            </DraggableElement>
                         )}
                     </div>
                 </div>
@@ -162,7 +171,9 @@ export const BreakingNews = () => {
                                 textAlign,
                                 color: '#FFFFFF',
                                 fontWeight,
-                                fontSize: `calc(1em * ${bodySize})`
+                                fontSize: `calc(1em * ${bodySize})`,
+                                fontStyle: (variant === 'News_4') ? 'italic' : fontStyle, // Maintain default italic for Impact if needed, or allow override
+                                textDecoration
                             }}
                         >
                             {body || 'BERRY\nGOOD\nNEWS'}
@@ -248,7 +259,7 @@ export const BreakingNews = () => {
                 </div>
 
                 {/* Decorative scanning line overlap entire */}
-                <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[length:100%_3px] bg-repeat-y" style={{ backgroundImage: 'linear-gradient(to bottom, transparent 50%, #fff 50%)' }} />
+                <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[length:100%_3px] bg-repeat-y bg-[linear-gradient(to_bottom,transparent_50%,#fff_50%)]" />
             </div>
         )
     }

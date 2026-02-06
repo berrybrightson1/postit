@@ -37,31 +37,31 @@ export const UndoRedoControls = () => {
     }
 
     return (
-        <div className="flex items-center gap-1 bg-white border border-black/5 rounded-lg p-0.5 shadow-sm h-9">
+        <div className="flex items-center gap-1 h-full">
             <button
                 onClick={handleUndo}
                 disabled={!canUndo}
                 className={cn(
-                    "flex-1 h-full px-2 rounded-md hover:bg-gray-50 transition-colors",
+                    "h-full px-2 rounded-xl hover:bg-white hover:text-primary hover:shadow-sm transition-all",
                     !canUndo && "opacity-30 cursor-not-allowed text-gray-400",
-                    canUndo && "text-gray-700"
+                    canUndo && "text-gray-500"
                 )}
                 title="Undo (Ctrl+Z)"
             >
-                <RotateCcw size={14} />
+                <RotateCcw size={12} strokeWidth={3} />
             </button>
-            <div className="w-px h-4 bg-gray-100" />
+            <div className="w-px h-4 bg-gray-200/50" />
             <button
                 onClick={handleRedo}
                 disabled={!canRedo}
                 className={cn(
-                    "flex-1 h-full px-2 rounded-md hover:bg-gray-50 transition-colors",
+                    "h-full px-2 rounded-xl hover:bg-white hover:text-primary hover:shadow-sm transition-all",
                     !canRedo && "opacity-30 cursor-not-allowed text-gray-400",
                     canRedo && "text-gray-700"
                 )}
                 title="Redo (Ctrl+Y)"
             >
-                <RotateCw size={14} />
+                <RotateCw size={12} strokeWidth={3} />
             </button>
         </div>
     )

@@ -1,4 +1,4 @@
-export const GOOGLE_FONTS = [
+export const GOOGLE_FONTS = Array.from(new Set([
     "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Playfair Display", "Oswald", "Raleway", "Merriweather", "Noto Sans",
     "Poppins", "Ubuntu", "Roboto Mono", "Space Grotesk", "Outfit", "Bebas Neue", "Lora", "Source Sans Pro", "PT Sans", "Josefin Sans",
     "Quicksand", "Dancing Script", "Pacifico", "Caveat", "Shadows Into Light", "Abril Fatface", "Arvo", "Exo 2", "Bitter", "Kanit",
@@ -18,7 +18,7 @@ export const GOOGLE_FONTS = [
     "Teko", "Chakra Petch", "Khand", "Tallu", "Saira", "Bai Jamjuree", "Mitr", "Pridi", "Prompt", "Sarabun",
     "Taviraj", "Trirong", "Itim", "Mali", "Srisakdi", "Charm", "Charmonman", "Krub", "KoHo", "Kodchasan",
     "Fahkwang", "Chonburi", "Savy", "Anek Devanagari", "Anek Gujarati", "Anek Kannada", "Anek Malayalam", "Anek Odia", "Anek Tamil", "Anek Telugu"
-].sort();
+])).sort();
 
 export const isStandardFont = (font: string) => {
     return ['Inter', 'Playfair Display', 'Space Grotesk', 'Outfit', 'Bebas Neue'].includes(font);

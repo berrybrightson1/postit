@@ -6,7 +6,10 @@ import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, Globe } from 'lucide-r
 import { cn } from '@/lib/utils'
 import { TemplateLogo } from './shared/TemplateLogo'
 import { TemplateBackdrop } from './shared/TemplateBackdrop'
+import { fontWeightMap } from '@/lib/utils'
 import { ImagePlaceholder } from './shared/ImagePlaceholder'
+import { DraggableElement } from '../canvas/DraggableElement'
+import { EditableText } from '../canvas/EditableText'
 
 // Default Facebook logo
 const FACEBOOK_LOGO = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHJ4PSI4IiBmaWxsPSIjMTg3N0YyIi8+PHBhdGggZD0iTTI2LjUgMjVIMzBMMzEgMjBIMjYuNVYxNy41QzI2LjUgMTYgMjYuNSAxNC41IDI5IDE0LjVIMzFWMTAuMjVDMzAuMzUgMTAuMTc1IDI4LjcgMTAgMjcgMTBDMjMuMiAxMCAyMC41IDEyLjQzNzUgMjAuNSAxNi43NVYyMEgxNlYyNUgyMC41VjM4SDI2LjVWMjVaIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg=='
@@ -26,7 +29,16 @@ export const FacebookPost = () => {
         profileImage,
         setProfileImage,
         mainImage,
-        backdropPosition
+        backdropPosition,
+        fontWeight,
+        fontStyle,
+        textDecoration,
+        setHeadline,
+        setFooter,
+        setBody,
+        setEmail,
+        setBrandingLine1,
+        setBrandingLine2
     } = useStore()
 
     const fileInputRef = React.useRef<HTMLInputElement>(null)
@@ -35,8 +47,12 @@ export const FacebookPost = () => {
         <div className="w-full h-full relative overflow-hidden bg-white flex flex-col font-sans">
             {/* Header */}
             <div className="px-4 py-3 flex items-start justify-between bg-white z-10">
-                <div className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 relative cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
+                <DraggableElement id="headline" className="flex gap-3">
+                    <div
+                        className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 relative cursor-pointer group"
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onClick={() => fileInputRef.current?.click()}
+                    >
                         <img src={profileImage || FACEBOOK_LOGO} className="w-full h-full object-cover" alt="Profile" />
                         <input
                             ref={fileInputRef}
@@ -53,19 +69,30 @@ export const FacebookPost = () => {
                                     reader.readAsDataURL(file)
                                 }
                             }}
+                            title="Upload profile image"
+                            placeholder="Upload profile image"
                         />
                     </div>
-                    <div>
-                        <h3 className="font-bold text-gray-900 text-[15px] leading-tight hover:underline cursor-pointer">
-                            {headline || 'Post Author'}
-                        </h3>
+                    <div className="flex flex-col">
+                        <EditableText
+                            tagName="h3"
+                            value={headline}
+                            onChange={setHeadline}
+                            className="font-bold text-gray-900 text-[15px] leading-tight hover:underline cursor-pointer min-w-[50px]"
+                            placeholder="Post Author"
+                        />
                         <div className="flex items-center gap-1.5 text-gray-500 text-[12px] mt-0.5">
-                            <span>{footer || 'Just now'}</span>
+                            <EditableText
+                                value={footer}
+                                onChange={setFooter}
+                                className="min-w-[30px]"
+                                placeholder="Just now"
+                            />
                             <span>·</span>
                             <Globe size={11} />
                         </div>
                     </div>
-                </div>
+                </DraggableElement>
                 <MoreHorizontal className="text-gray-500" />
             </div>
 
@@ -74,20 +101,23 @@ export const FacebookPost = () => {
 
                 {/* Text Area */}
                 {body && (
-                    <div className="px-4 pb-3 pt-1 w-full text-left relative z-10 bg-white text-gray-900">
-                        <p
+                    <DraggableElement id="body" className="px-4 pb-3 pt-1 w-full text-left relative z-10 bg-white text-gray-900">
+                        <EditableText
+                            tagName="p"
+                            value={body}
+                            onChange={setBody}
                             style={{
                                 fontFamily,
                                 fontSize: `calc(1rem * ${bodySize})`,
+                                fontWeight: fontWeightMap[fontWeight],
                                 color: textColor !== '#FFFFFF' ? textColor : undefined, // Inherit or custom
-                                lineHeight: 1.5,
-                                textAlign: (textAlign || 'left') as any
+                                textAlign: (textAlign || 'left') as any,
+                                fontStyle, textDecoration
                             }}
-                            className={!textColor || textColor === '#FFFFFF' ? 'text-black dark:text-white' : ''}
-                        >
-                            {body}
-                        </p>
-                    </div>
+                            className={cn("leading-relaxed min-w-[100px]", (!textColor || textColor === '#FFFFFF') ? 'text-black dark:text-white' : '')}
+                            placeholder="What's on your mind?"
+                        />
+                    </DraggableElement>
                 )}
 
                 {/* Media Area - Backdrop and Image live here */}
@@ -106,7 +136,7 @@ export const FacebookPost = () => {
             </div>
 
             {/* Interaction Bar */}
-            <div className="px-4 py-2 bg-white z-10 border-b border-gray-100">
+            <DraggableElement id="footer" className="px-4 py-2 bg-white z-10 border-b border-gray-100">
                 <div className="flex justify-between items-center text-gray-500 text-sm">
                     <div className="flex items-center gap-1.5 min-w-0 flex-1">
                         <div className="flex -space-x-1 flex-shrink-0">
@@ -117,14 +147,36 @@ export const FacebookPost = () => {
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
                             </div>
                         </div>
-                        <span className="ml-1 hover:underline cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis">{email || 'You and 34 others'}</span>
+                        <EditableText
+                            tagName="span"
+                            value={email}
+                            onChange={setEmail}
+                            className="ml-1 hover:underline cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis min-w-[50px]"
+                            placeholder="You and 34 others"
+                        />
                     </div>
                     <div className="flex gap-3 text-gray-500 flex-shrink-0 whitespace-nowrap">
-                        <span className="hover:underline cursor-pointer">{brandingLine1} comments</span>
-                        <span className="hover:underline cursor-pointer">{brandingLine2} shares</span>
+                        <div className="flex gap-1 hover:underline cursor-pointer">
+                            <EditableText
+                                value={brandingLine1}
+                                onChange={setBrandingLine1}
+                                className="min-w-[10px]"
+                                placeholder="0"
+                            />
+                            <span>comments</span>
+                        </div>
+                        <div className="flex gap-1 hover:underline cursor-pointer">
+                            <EditableText
+                                value={brandingLine2}
+                                onChange={setBrandingLine2}
+                                className="min-w-[10px]"
+                                placeholder="0"
+                            />
+                            <span>shares</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </DraggableElement>
 
             {/* Action Buttons */}
             <div className="px-2 py-1 bg-white z-10">

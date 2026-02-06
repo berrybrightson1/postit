@@ -4,6 +4,7 @@ import React from 'react'
 import { useStore } from '@/lib/store'
 import { TemplateBackdrop } from './shared/TemplateBackdrop'
 import { TemplateLogo } from './shared/TemplateLogo'
+import { fontWeightMap } from '@/lib/utils'
 
 export const YouTubeThumbnail = () => {
     const {
@@ -12,16 +13,20 @@ export const YouTubeThumbnail = () => {
         primaryColor,
         textColor,
         templateId,
-        templateStyles
+        templateStyles,
+        fontStyle,
+        textDecoration,
+        textAlign
     } = useStore() // Remove bodySize from destructuring to avoid conflict
 
     // Access styling from the current template definitions
     const style = templateStyles[templateId] || {}
-    const bodySize = style.bodySize || 1 // Override the store root bodySize with the template specific one
-    const fontWeight = style.fontWeight || 'bold'
+    const bodySize = style.bodySize || 1
+    const weightKey = style.fontWeight || 'bold'
+    const fontWeight = fontWeightMap[weightKey as keyof typeof fontWeightMap] || 700
     const lineHeight = style.lineHeight
     const letterSpacing = style.letterSpacing
-    const fontFamily = style.fontFamily || 'Impact' // Fallback font
+    const fontFamily = style.fontFamily || 'Impact'
 
     return (
         <div className="w-full aspect-video flex bg-white font-sans overflow-hidden shadow-2xl">
@@ -48,7 +53,8 @@ export const YouTubeThumbnail = () => {
                             fontWeight: fontWeight,
                             lineHeight: lineHeight !== undefined ? lineHeight : 0.9,
                             letterSpacing: `${letterSpacing !== undefined ? letterSpacing : -0.05}em`,
-                            textAlign: 'left'
+                            fontStyle, textDecoration,
+                            textAlign: (textAlign as any) || 'left'
                         }}
                     >
                         {headline}
@@ -63,7 +69,8 @@ export const YouTubeThumbnail = () => {
                             fontWeight: fontWeight,
                             lineHeight: (lineHeight !== undefined ? lineHeight : 1.1) + 0.2, // Slightly looser for body
                             letterSpacing: `${letterSpacing !== undefined ? letterSpacing : 0}em`,
-                            textAlign: 'left'
+                            fontStyle, textDecoration,
+                            textAlign: (textAlign as any) || 'left'
                         }}
                     >
                         {body}

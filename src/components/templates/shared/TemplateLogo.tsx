@@ -14,7 +14,7 @@ interface TemplateLogoProps {
 }
 
 export const TemplateLogo = ({ className, style, containerClassName, mode = 'static', placeholder, imageClassName }: TemplateLogoProps) => {
-    const { logo, isLogoDraggable, logoPosition, setLogoPosition, setLogo } = useStore()
+    const { logo, isDragMode, logoPosition, setLogoPosition, setLogo } = useStore()
 
     if (!logo) {
         if (placeholder && mode !== 'draggable') {
@@ -35,11 +35,11 @@ export const TemplateLogo = ({ className, style, containerClassName, mode = 'sta
 
     // If we are in static mode, but dragging is enabled, we hide this instance
     // because the global "draggable" instance in PreviewStage will take over.
-    if (mode === 'static' && isLogoDraggable) return null
+    if (mode === 'static' && isDragMode) return null
 
     // If we are in draggable mode, but dragging is disabled, we hide this instance
     // because the static instances inside the templates will show.
-    if (mode === 'draggable' && !isLogoDraggable) return null
+    if (mode === 'draggable' && !isDragMode) return null
 
     return (
         <div

@@ -7,6 +7,8 @@ import { CheckCircle2, Heart, MessageCircle, Share2, Repeat2 } from 'lucide-reac
 import { TemplateLogo } from './shared/TemplateLogo'
 import { TemplateBackdrop } from './shared/TemplateBackdrop'
 import { ImagePlaceholder } from './shared/ImagePlaceholder'
+import { DraggableElement } from '../canvas/DraggableElement'
+import { EditableText } from '../canvas/EditableText'
 
 // Default X/Twitter logo
 const TWITTER_X_LOGO = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHJ4PSI4IiBmaWxsPSIjMDAwMDAwIi8+PHBhdGggZD0iTTI3LjUgMjRMMzUuNSAxNEgzMy41TDI2LjUgMjIuNUwyMSAxNEgxMi41TDIxIDI1TDEyLjUgMzVIMTQuNUwyMS41IDI2LjVMMjcgMzVIMzUuNUwyNy41IDI0WiIgZmlsbD0id2hpdGUiLz48L3N2Zz4='
@@ -26,12 +28,18 @@ export const TwitterStyle = () => {
         brandingLine1,
         brandingLine2,
         fontFamily,
+        fontStyle,
+        textDecoration,
+        fontWeight,
         textAlign,
         autoFontSize,
         userTier,
         templateId,
         templateStyles,
-        profileImage
+        profileImage,
+        setHeadline,
+        setBody,
+        setFooter
     } = useStore()
 
     const bodySize = templateStyles[templateId]?.bodySize || 1
@@ -56,18 +64,24 @@ export const TwitterStyle = () => {
         >
             {/* Header: Avatar, Name, Handle, Logo */}
             <div className="flex justify-between items-start mb-4 relative z-10">
-                <div className="flex gap-3">
+                <DraggableElement id="headline" className="flex gap-3">
                     <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
                         <img src={profileImage || TWITTER_X_LOGO} className="w-full h-full object-cover" alt="Profile" />
                     </div>
                     <div className="flex flex-col leading-tight justify-center">
                         <div className="flex items-center gap-1">
-                            <span className="font-bold text-[15px]" style={{ color: xTextColor }}>{headline || 'Post Author'}</span>
+                            <EditableText
+                                value={headline}
+                                onChange={setHeadline}
+                                className="font-bold text-[15px] min-w-[50px]"
+                                style={{ color: xTextColor }}
+                                placeholder="Post Author"
+                            />
                             <CheckCircle2 size={16} className="text-[#1D9BF0] fill-[#1D9BF0] text-white" />
                         </div>
                         <span className="text-[15px]" style={{ color: xSubTextColor }}>{handle}</span>
                     </div>
-                </div>
+                </DraggableElement>
                 <div className="opacity-80">
                     {/* X Logo - switch based on theme */}
                     <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" style={{ fill: xTextColor }}><g><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></g></svg>
@@ -75,23 +89,26 @@ export const TwitterStyle = () => {
             </div>
 
             {/* Post Content */}
-            <div className="mb-3 relative z-10 flex-shrink-0">
-                <p
-                    className="whitespace-pre-wrap leading-normal"
+            <DraggableElement id="body" className="mb-3 relative z-10 flex-shrink-0">
+                <EditableText
+                    tagName="p"
+                    value={body}
+                    onChange={setBody}
+                    className="whitespace-pre-wrap leading-normal min-w-[100px]"
                     style={{
                         color: xTextColor,
                         fontFamily,
                         fontSize: `calc(1.2rem * ${bodySize})`,
-                        fontWeight: '400',
+                        fontWeight,
+                        fontStyle,
+                        textDecoration,
                         textAlign: textAlign as any
                     }}
-                >
-                    {body}
-                </p>
-            </div>
+                    placeholder="What's happening?"
+                />
+            </DraggableElement>
 
             {/* Media Area (Main Image) */}
-            {/* Media Area (Main Image) - Always render area to show placeholder if no image */}
             <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 relative z-10 w-full mb-3 flex-shrink-0 min-h-[200px] max-h-[50%] bg-gray-50/50">
                 {mainImage ? (
                     <img src={mainImage} className={cn("w-full h-full object-cover max-h-[350px]", backdropPosition)} alt="Post media" />
@@ -108,10 +125,8 @@ export const TwitterStyle = () => {
                 <span>Views</span>
             </div>
 
-            {/* Interaction Metrics Stats (Optional middle bar) would go here */}
-
             {/* Interaction Icons */}
-            <div className="flex justify-between items-center px-2 relative z-10 w-full mt-auto">
+            <DraggableElement id="footer" className="flex justify-between items-center px-2 relative z-10 w-full mt-auto">
                 <div className="flex items-center gap-2 group cursor-pointer" style={{ color: xSubTextColor }}>
                     <div className="p-2 rounded-full group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors">
                         <MessageCircle size={20} />
@@ -135,9 +150,8 @@ export const TwitterStyle = () => {
                         <Share2 size={20} />
                     </div>
                 </div>
-            </div>
+            </DraggableElement>
 
-            {/* Optional: Add a subtle texture or noise if requested, but clean is better for X */}
             <div className="absolute top-4 right-4 z-0 opacity-0 pointer-events-none">
                 <TemplateLogo mode="draggable" />
             </div>

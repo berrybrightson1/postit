@@ -56,13 +56,69 @@ export const TextInputs = () => {
             footerPlaceholder: 'e.g. PRESIDENT BERRY',
             showEmail: false,
             showBranding: false
+        },
+        TwitterStyle: {
+            showHeadline: true,
+            headlineLabel: 'User Account',
+            headlinePlaceholder: 'e.g. President Berry',
+            footerLabel: 'Handle',
+            footerPlaceholder: 'e.g. @presberry',
+            showEmail: false,
+            showBranding: false
+        },
+        InstagramPost: {
+            showHeadline: true,
+            headlineLabel: 'Account Name',
+            headlinePlaceholder: 'e.g. berrybgson',
+            footerLabel: 'Location/Sub-text',
+            footerPlaceholder: 'e.g. Washington, D.C.',
+            showEmail: true,
+            showBranding: false
+        },
+        FacebookPost: {
+            showHeadline: true,
+            headlineLabel: 'Post Author',
+            headlinePlaceholder: 'e.g. Berry Brightson',
+            footerLabel: 'Post Time/Privacy',
+            footerPlaceholder: 'e.g. Just now',
+            showEmail: false,
+            showBranding: false
+        },
+        YouTubeThumbnail: {
+            showHeadline: true,
+            headlineLabel: 'Main Title',
+            headlinePlaceholder: 'e.g. BERRY UNFILTERED',
+            showFooter: false,
+            footerLabel: 'Sub-title (Optional)',
+            footerPlaceholder: 'e.g. SEASON 1 FINALE',
+            showEmail: false,
+            showBranding: false
+        },
+        MagazineCover: {
+            showHeadline: true,
+            headlineLabel: 'Magazine Title',
+            headlinePlaceholder: 'e.g. TYCOON',
+            footerLabel: 'Issue Text',
+            footerPlaceholder: 'e.g. THE FUTURE ISSUE',
+            showEmail: false,
+            showBranding: true
+        },
+        SportsScore: {
+            showHeadline: true,
+            headlineLabel: 'Event Name',
+            headlinePlaceholder: 'e.g. THE BIG WIN',
+            footerLabel: 'Match Details',
+            footerPlaceholder: 'e.g. FINAL SCORE',
+            showEmail: false,
+            showBranding: true
         }
     }
 
     const current = (config as any)[templateId] ||
         (templateId.includes('Notice') ? config.PublicNotice :
             templateId.includes('Quote') ? config.ViralQuote :
-                config.BreakingNews)
+                templateId.includes('Special') ? config.TwitterStyle : // Use Twitter as default Special
+                    config.BreakingNews)
 
     return (
         <div className="flex flex-col gap-4" onPaste={handlePaste}>
@@ -95,19 +151,21 @@ export const TextInputs = () => {
                 />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-2 px-1">
-                    <Info size={12} className="text-gray-400" />
-                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">{current.footerLabel}</label>
+            {current.showFooter !== false && (
+                <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center gap-2 px-1">
+                        <Info size={12} className="text-gray-400" />
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">{current.footerLabel}</label>
+                    </div>
+                    <input
+                        type="text"
+                        value={footer}
+                        onChange={(e) => setFooter(e.target.value)}
+                        placeholder={current.footerPlaceholder}
+                        className="pill-container w-full !p-3 font-bold text-base"
+                    />
                 </div>
-                <input
-                    type="text"
-                    value={footer}
-                    onChange={(e) => setFooter(e.target.value)}
-                    placeholder={current.footerPlaceholder}
-                    className="pill-container w-full !p-3 font-bold text-base"
-                />
-            </div>
+            )}
 
             {current.showEmail && (
                 <div className="flex flex-col gap-1.5">

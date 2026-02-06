@@ -191,7 +191,7 @@ export const TemplateSelector = () => {
                     isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
                 )}>
                     <div className="overflow-hidden">
-                        <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4 pt-8 pb-20 px-4">
+                        <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2.5 pt-4 pb-12 px-1">
                             {variations[activeCategory].map((v) => {
                                 const isSelected = templateId === v.id
                                 const isLocked = !!v.isPremium && userTier === 'free'
@@ -214,7 +214,7 @@ export const TemplateSelector = () => {
                                             }}
                                             disabled={isLocked}
                                             className={cn(
-                                                "group relative flex flex-col gap-4 p-3 rounded-[32px] transition-all duration-500 border-2 text-left w-full",
+                                                "group relative flex flex-col gap-2 p-1.5 rounded-[20px] transition-all duration-500 border-2 text-left w-full",
                                                 isSelected
                                                     ? cn("bg-white z-10", borderClass, shadowClass)
                                                     : "bg-white border-gray-100/50 hover:border-gray-200"
@@ -222,17 +222,17 @@ export const TemplateSelector = () => {
                                         >
                                             {/* Thumbnail Container */}
                                             <div className={cn(
-                                                "aspect-square rounded-[24px] overflow-hidden relative transition-all duration-700",
+                                                "aspect-square rounded-[14px] overflow-hidden relative transition-all duration-700",
                                                 isSelected ? lightBgClass : "bg-gray-50/50"
                                             )}>
-                                                <div className="absolute inset-0 flex flex-col p-6 items-center justify-center">
+                                                <div className="absolute inset-0 flex flex-col p-3 items-center justify-center">
                                                     <div className={cn(
-                                                        "w-full aspect-[4/3] rounded-xl mb-4 shadow-lg transition-all duration-700 scale-90",
+                                                        "w-full aspect-[4/3] rounded-md mb-1.5 shadow-md transition-all duration-700 scale-90",
                                                         isSelected ? colorClass : "bg-gray-200"
                                                     )} />
-                                                    <div className="w-full flex flex-col gap-2 px-2">
-                                                        <div className={cn("h-2 w-full rounded-full opacity-20", isSelected ? colorClass : "bg-gray-200")} />
-                                                        <div className={cn("h-2 w-2/3 rounded-full opacity-20", isSelected ? colorClass : "bg-gray-200")} />
+                                                    <div className="w-full flex flex-col gap-1 px-2">
+                                                        <div className={cn("h-1 w-full rounded-full opacity-20", isSelected ? colorClass : "bg-gray-200")} />
+                                                        <div className={cn("h-1 w-2/3 rounded-full opacity-20", isSelected ? colorClass : "bg-gray-200")} />
                                                     </div>
                                                 </div>
 
@@ -244,17 +244,17 @@ export const TemplateSelector = () => {
                                             </div>
 
                                             {/* Content */}
-                                            <div className="px-2 py-1 flex flex-col gap-2">
+                                            <div className="px-1.5 py-0 flex flex-col gap-0.5">
                                                 <span className={cn(
-                                                    "text-[13px] font-black uppercase tracking-wider transition-colors duration-500",
+                                                    "text-[10px] font-black uppercase tracking-wider transition-colors duration-500 leading-tight",
                                                     isSelected ? "text-gray-900" : "text-gray-400"
                                                 )}>
                                                     {v.name}
                                                 </span>
-                                                <div className="flex items-center gap-2">
-                                                    <div className={cn("w-2 h-2 rounded-full transition-all duration-500", isSelected ? colorClass : "bg-gray-200")} />
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className={cn("w-1 h-1 rounded-full transition-all duration-500", isSelected ? colorClass : "bg-gray-200")} />
                                                     <span className={cn(
-                                                        "text-[10px] font-black uppercase tracking-[0.15em] transition-opacity duration-500",
+                                                        "text-[8px] font-black uppercase tracking-[0.1em] transition-opacity duration-500",
                                                         isSelected ? textColorClass : "text-gray-300"
                                                     )}>
                                                         {activeCategory}

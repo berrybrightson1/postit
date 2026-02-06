@@ -6,10 +6,16 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const fontWeightMap = {
+    'thin': 100,
     'normal': 400,
+    'medium': 500,
+    'semibold': 600,
     'bold': 700,
+    'extra-bold': 800,
     'black': 900
 } as const
+
+export type FontWeight = keyof typeof fontWeightMap
 
 export type Category = 'News' | 'Notice' | 'Quote' | 'Special'
 export type TemplateId = 'BreakingNews' | 'PublicNotice' | 'ViralQuote' | 'News_1' | 'News_2' | 'Notice_1' | 'Notice_2' | 'Quote_1' | 'Quote_2' | 'Special_1' | 'Special_2'
