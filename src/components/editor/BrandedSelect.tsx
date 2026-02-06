@@ -103,7 +103,7 @@ export const BrandedSelect = ({ value, onChange, options, placeholder, className
                 onClick={toggleOpen}
                 title={placeholder || "Select option"}
                 className={cn(
-                    "w-full h-9 flex items-center justify-between bg-gray-50 border border-gray-100 rounded-2xl px-3 text-[11px] font-bold text-gray-700 transition-all",
+                    "w-full h-9 flex items-center justify-between bg-gray-50 border border-gray-100 rounded-xl px-3 text-[11px] font-bold text-gray-700 transition-all",
                     isOpen ? "ring-2 ring-primary/10 border-primary/20 bg-white shadow-sm" : "hover:border-gray-200 hover:bg-gray-100/50"
                 )}
             >

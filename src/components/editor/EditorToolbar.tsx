@@ -307,7 +307,7 @@ export const EditorToolbar = () => {
 
                 <div className="w-px h-6 bg-gray-200 shrink-0 mx-1" />
 
-                <div className="flex items-center gap-1.5 p-1 h-9 bg-gray-100/80 rounded-2xl shrink-0">
+                <div className="flex items-center gap-1.5 p-1 h-9 bg-gray-100/80 rounded-xl shrink-0">
                     <button
                         onClick={() => setTextAlign('left')}
                         className={cn("p-2 h-full aspect-square flex items-center justify-center rounded-xl transition-all", textAlign === 'left' ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-gray-600")}
@@ -392,8 +392,8 @@ export const EditorToolbar = () => {
             </div>
 
             {/* Row 4: Navigation, View & Elements */}
-            <div className="relative z-30 flex items-center justify-between bg-white/70 backdrop-blur-md p-1.5 rounded-2xl border border-black/5 shadow-sm">
-                <div className="flex items-center gap-1.5 p-1 h-9 bg-gray-100/80 rounded-2xl shrink-0">
+            <div className="relative z-30 flex items-center bg-white/70 backdrop-blur-md p-1.5 rounded-2xl border border-black/5 shadow-sm overflow-x-auto no-scrollbar gap-2">
+                <div className="flex items-center gap-1.5 p-1 h-9 bg-gray-100/80 rounded-xl shrink-0">
                     <button
                         onClick={handleAddText}
                         className="flex items-center gap-2 px-3 h-full hover:bg-white hover:text-primary hover:shadow-sm transition-all rounded-xl text-gray-500 group/btn"
@@ -402,7 +402,7 @@ export const EditorToolbar = () => {
                         <span className="text-[10px] font-black uppercase tracking-widest">Text</span>
                     </button>
 
-                    <div className="relative" ref={popoverRef}>
+                    <div className="relative h-full" ref={popoverRef}>
                         <button
                             onClick={() => setShowStickerLibrary(!showStickerLibrary)}
                             className={cn(
@@ -486,6 +486,7 @@ export const EditorToolbar = () => {
                     </button>
                 </div>
 
+                <div className="w-px h-6 bg-gray-200 shrink-0 mx-1" />
                 <div className="flex items-center gap-2 p-1 h-9 bg-gray-100/80 rounded-2xl shrink-0">
                     <div className="flex items-center gap-1 h-full">
                         <UndoRedoControls />

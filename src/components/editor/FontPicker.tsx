@@ -150,7 +150,7 @@ export const FontPicker = ({ value, onChange, userTier }: FontPickerProps) => {
             {/* Word Style Input/Dropdown Toggle */}
             <div
                 className={cn(
-                    "flex items-center gap-2 h-9 bg-gray-50 border border-gray-100 rounded-2xl px-3 transition-all cursor-pointer group/font",
+                    "flex items-center gap-2 h-9 bg-gray-50 border border-gray-100 rounded-xl px-3 transition-all cursor-pointer group/font",
                     isOpen ? "ring-2 ring-primary/20 border-primary/20 bg-white shadow-sm" : "hover:border-gray-200 hover:bg-gray-100/50"
                 )}
                 onClick={toggleOpen}
